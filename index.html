@@ -46,12 +46,10 @@
     /* ── Hero ── */
     #hero {
       position: relative;
-      height: 100vh;
-      min-height: 600px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 0 8vw;
+      padding: 7rem 8vw 4rem;
       overflow: hidden;
     }
 
@@ -79,7 +77,7 @@
       letter-spacing: 0.35em;
       color: var(--cyan);
       text-transform: uppercase;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1rem;
       opacity: 0;
     }
 
@@ -89,7 +87,7 @@
       font-weight: 700;
       line-height: 0.88;
       letter-spacing: -0.025em;
-      margin-bottom: 2rem;
+      margin-bottom: 1.25rem;
       opacity: 0;
     }
     .hero-title .accent { color: var(--cyan); }
@@ -99,7 +97,7 @@
       color: rgba(255,255,255,0.55);
       max-width: 460px;
       line-height: 1.75;
-      margin-bottom: 2.5rem;
+      margin-bottom: 1.5rem;
       opacity: 0;
     }
 
@@ -536,7 +534,7 @@
       top: 0;
       left: 0;
       right: 0;
-      z-index: 500;
+      z-index: 9999;
       background: rgba(10,10,12,0.82);
       border-bottom: 1px solid rgba(0,240,255,0.15);
       backdrop-filter: blur(14px);
@@ -859,27 +857,7 @@
     // Fix: eyebrow starts at opacity 0 via CSS, animate with from
     gsap.set('.eyebrow', { opacity: 0, y: 16 });
 
-    // ── Pin hero while pillars scroll over ──
-    ScrollTrigger.create({
-      trigger: '#hero',
-      start: 'top top',
-      endTrigger: '#pillars',
-      end: 'bottom bottom',
-      pin: true,
-      pinSpacing: false
-    });
-
-    // ── Hero dims as pillars arrive ──
-    gsap.to('#hero', {
-      opacity: 0.25,
-      scale: 0.975,
-      scrollTrigger: {
-        trigger: '#pillars',
-        start: 'top 85%',
-        end: 'top 25%',
-        scrub: true
-      }
-    });
+    // Hero pin removed — content flows directly into pillars
 
     // ── Pillar content slide in ──
     gsap.utils.toArray('.pillar').forEach((pillar) => {
