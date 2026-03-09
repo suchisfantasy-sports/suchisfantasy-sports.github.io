@@ -166,10 +166,10 @@
     }
 
     .pillar {
-      min-height: 100vh;
+      min-height: 65vh;
       display: flex;
       align-items: center;
-      padding: 6rem 8vw;
+      padding: 3.5rem 8vw;
       border-top: 1px solid rgba(255,255,255,0.06);
       position: relative;
       overflow: hidden;
@@ -240,7 +240,7 @@
       position: relative;
       z-index: 10;
       background: var(--zinc);
-      padding: 8rem 8vw;
+      padding: 5rem 8vw;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
 
@@ -257,7 +257,7 @@
       font-size: clamp(2rem, 4.5vw, 3.5rem);
       font-weight: 700;
       letter-spacing: -0.02em;
-      margin-bottom: 4rem;
+      margin-bottom: 2.25rem;
     }
 
     .sports-grid {
@@ -308,13 +308,13 @@
       position: relative;
       z-index: 10;
       background: var(--zinc);
-      min-height: 80vh;
+      min-height: 60vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 8rem 8vw;
+      padding: 5rem 8vw;
       border-top: 1px solid rgba(255,255,255,0.06);
       overflow: hidden;
     }
@@ -530,19 +530,103 @@
       text-decoration: none;
     }
 
+    /* ── Announcement Banner ── */
+    #announce-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      background: rgba(10,10,12,0.82);
+      border-bottom: 1px solid rgba(0,240,255,0.15);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 0.6rem 8vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    #announce-bar .announce-text {
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.6);
+    }
+    #announce-bar .announce-text strong {
+      color: #fff;
+      font-weight: 500;
+    }
+    #announce-bar .announce-cta {
+      flex-shrink: 0;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.68rem;
+      letter-spacing: 0.07em;
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid rgba(0,240,255,0.3);
+      padding: 0.3rem 0.85rem;
+      border-radius: 2px;
+      white-space: nowrap;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    #announce-bar .announce-cta:hover { background: var(--cyan); color: #000; }
+
+    /* ── Inline CTA strip ── */
+    .inline-cta-strip {
+      padding: 3rem 8vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+      position: relative;
+      background: var(--zinc);
+    }
+    .inline-cta-strip p {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.8);
+    }
+    .inline-cta-strip p em {
+      color: var(--cyan);
+      font-style: normal;
+    }
+
+    /* ── Social proof ── */
+    .social-proof {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.28);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .sports-grid { grid-template-columns: 1fr; }
       .pillar-num { display: none; }
-      .pillar { padding: 5rem 6vw; }
+      .pillar { padding: 3rem 6vw; }
+      .inline-cta-strip { flex-direction: column; align-items: flex-start; }
+      #announce-bar { padding: 0.55rem 5vw; }
+      #announce-bar .announce-text { font-size: 0.65rem; }
     }
     @media (max-width: 480px) {
       #hero { padding: 0 6vw; }
-      #sports, #final-cta { padding: 6rem 6vw; }
+      #sports, #final-cta { padding: 4rem 6vw; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ── Announcement Banner ── -->
+  <div id="announce-bar">
+    <p class="announce-text"><strong>Stop losing to people with better intel.</strong> &nbsp;Expert tips, live injury alerts, real community — $9.99/mo.</p>
+    <a href="https://whop.com/suchisfantasy/" class="announce-cta open-checkout">Join Now →</a>
+  </div>
 
   <!-- ════════════════════════════════════════
        WHOP CHECKOUT MODAL
@@ -613,7 +697,7 @@
       <a href="https://whop.com/suchisfantasy/" class="cta-btn open-checkout">
         Join the Community →
       </a>
-      <p class="price-note">$9.99 / month &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; Discord access included</p>
+      <p class="price-note">Less than a coffee a week &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; Discord included</p>
     </div>
 
     <span class="scroll-hint">scroll</span>
@@ -652,6 +736,12 @@
           <li>Price movement and late scratching updates</li>
         </ul>
       </div>
+    </div>
+
+    <!-- Mid-page CTA strip -->
+    <div class="inline-cta-strip">
+      <p>Already convinced? <em>You should be.</em></p>
+      <a href="https://whop.com/suchisfantasy/" class="cta-btn open-checkout">Join Now — $9.99/mo →</a>
     </div>
 
     <div class="pillar">
@@ -741,13 +831,14 @@
   <section id="final-cta">
     <div class="final-glow"></div>
     <div class="divider-line"></div>
-    <p class="section-eyebrow">Ready to stop guessing?</p>
+    <p class="section-eyebrow">Stop losing to people with better intel</p>
     <h2 class="final-title clash">Join Such<br>Is Fantasy</h2>
-    <p class="final-sub">NRL. EPL. NBA. NFL. Expert tips, real-time injury alerts, and a community that takes the game seriously.</p>
+    <p class="final-sub">NRL. EPL. NBA. NFL. Expert picks, live injury alerts, and a community that takes it as seriously as you do.</p>
+    <p class="social-proof">Trusted by fantasy players across four sports and two hemispheres</p>
     <a href="https://whop.com/suchisfantasy/" class="cta-btn-lg open-checkout">
       Get Access for $9.99/mo →
     </a>
-    <p class="price-note" style="margin-top:1.25rem;">Cancel anytime. Discord included. No lock-in.</p>
+    <p class="price-note" style="margin-top:1.25rem;">Founding member pricing · Less than a coffee a week · Cancel anytime</p>
     <p class="footer-note">SCPB — Such Could Be Predicted &nbsp;·&nbsp; 2025</p>
   </section>
 
