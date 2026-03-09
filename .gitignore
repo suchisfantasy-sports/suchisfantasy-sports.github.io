@@ -1,0 +1,8 @@
+# Bot secrets — never commit
+rss-bot/.env
+rss-bot/seen.json
+rss-bot/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

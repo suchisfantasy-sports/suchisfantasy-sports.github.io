@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Such Is Fantasy — Expert Fantasy Sports Intelligence</title>
+  <meta name="description" content="Expert tips, real-time injury alerts & serious community for NRL, EPL, NBA and NFL fantasy players. $9.99/month.">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --zinc: #18181B;
+      --cyan: #00F0FF;
+      --magenta: #FF003C;
+      --surface: #1f1f22;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--zinc);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    .clash { font-family: 'Clash Display', sans-serif; }
+
+    /* ── Noise ── */
+    #noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.035;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 8vw;
+      overflow: hidden;
+    }
+
+    .glow-a {
+      position: absolute;
+      top: 15%;
+      right: 8%;
+      width: min(45vw, 500px);
+      height: min(45vw, 500px);
+      background: radial-gradient(circle, rgba(0,240,255,0.13) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .glow-b {
+      position: absolute;
+      bottom: 10%;
+      left: 3%;
+      width: min(35vw, 400px);
+      height: min(35vw, 400px);
+      background: radial-gradient(circle, rgba(255,0,60,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+      opacity: 0;
+    }
+
+    .hero-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(3.8rem, 10vw, 10rem);
+      font-weight: 700;
+      line-height: 0.88;
+      letter-spacing: -0.025em;
+      margin-bottom: 2rem;
+      opacity: 0;
+    }
+    .hero-title .accent { color: var(--cyan); }
+
+    .tagline {
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: rgba(255,255,255,0.55);
+      max-width: 460px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+    }
+
+    .sport-tags {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+      opacity: 0;
+    }
+    .sport-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      border: 1px solid rgba(0,240,255,0.25);
+      color: var(--cyan);
+      padding: 0.3rem 0.85rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .cta-wrap { opacity: 0; }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--cyan);
+      color: #000;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 1rem 2.25rem;
+      border-radius: 2px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: box-shadow 0.2s ease;
+    }
+    .cta-btn:hover { box-shadow: 0 0 50px rgba(0,240,255,0.35); }
+    .cta-btn:active { transform: scale(0.97); }
+
+    .price-note {
+      margin-top: 0.9rem;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.05em;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 8vw;
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+    }
+
+    /* ── Pillars ── */
+    #pillars {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc);
+    }
+
+    .pillar {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 8vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-num {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(7rem, 18vw, 16rem);
+      font-weight: 700;
+      color: rgba(255,255,255,0.03);
+      position: absolute;
+      right: 5vw;
+      top: 50%;
+      transform: translateY(-50%);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .pillar-body { max-width: 580px; }
+
+    .pillar-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      color: var(--magenta);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .pillar-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.5rem;
+    }
+
+    .pillar-desc {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.85;
+      margin-bottom: 2rem;
+    }
+
+    .feat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .feat-list li {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.65);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+    }
+    .feat-list li::before {
+      content: '→';
+      color: var(--cyan);
+      flex-shrink: 0;
+      margin-top: 0.05em;
+    }
+
+    /* ── Sports grid ── */
+    #sports {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc);
+      padding: 8rem 8vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .section-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4rem;
+    }
+
+    .sports-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sport-card {
+      background: var(--zinc);
+      padding: 3rem;
+      position: relative;
+      transition: background 0.3s ease;
+    }
+    .sport-card:hover { background: rgba(0,240,255,0.025); }
+
+    .sport-icon { font-size: 2.25rem; margin-bottom: 1.25rem; display: block; }
+
+    .sport-name {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .sport-platforms {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .sport-ch-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .sport-ch {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── Final CTA ── */
+    #final-cta {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc);
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 8vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+
+    .final-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70vw;
+      height: 70vh;
+      background: radial-gradient(ellipse, rgba(0,240,255,0.055) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .divider-line {
+      width: 40px;
+      height: 1px;
+      background: var(--cyan);
+      margin: 0 auto 2rem;
+    }
+
+    .final-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 0.92;
+      margin: 1.5rem 0;
+      max-width: 720px;
+    }
+
+    .final-sub {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.45);
+      max-width: 420px;
+      line-height: 1.85;
+      margin-bottom: 3rem;
+    }
+
+    .cta-btn-lg {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--cyan);
+      color: #000;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 1.15rem 3rem;
+      border-radius: 2px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: box-shadow 0.2s ease;
+    }
+    .cta-btn-lg:hover { box-shadow: 0 0 60px rgba(0,240,255,0.4); }
+    .cta-btn-lg:active { transform: scale(0.97); }
+
+    .footer-note {
+      color: rgba(255,255,255,0.18);
+      font-size: 0.65rem;
+      margin-top: 6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── Whop Checkout Modal ── */
+    #checkout-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #checkout-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    #modal-box {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: min(92vh, 720px);
+      background: #0e0e10;
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      border-radius: 4px;
+      overflow: hidden;
+      transform: translateY(24px) scale(0.98);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow:
+        0 0 0 1px rgba(0,240,255,0.06),
+        0 0 80px rgba(0,240,255,0.08),
+        0 40px 100px rgba(0,0,0,0.6);
+    }
+    #checkout-modal.open #modal-box {
+      transform: translateY(0) scale(1);
+    }
+    #modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+    #modal-brand {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+    }
+    #modal-brand span { color: var(--cyan); }
+    #modal-close {
+      width: 1.75rem;
+      height: 1.75rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      color: rgba(255,255,255,0.6);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: background 0.2s ease, color 0.2s ease;
+      flex-shrink: 0;
+    }
+    #modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    #modal-close:active { transform: scale(0.95); }
+    #modal-body {
+      position: relative;
+      height: calc(100% - 45px);
+    }
+    #modal-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: #0e0e10;
+      transition: opacity 0.4s ease;
+      z-index: 2;
+    }
+    #modal-loading.hidden { opacity: 0; pointer-events: none; }
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 2px solid rgba(0, 240, 255, 0.15);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #modal-loading p {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+    }
+    #modal-iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    #modal-iframe.loaded { opacity: 1; }
+    #modal-fallback {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      height: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+    #modal-fallback p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+    }
+    #modal-fallback a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--cyan);
+      color: #000;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
+      text-decoration: none;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .sports-grid { grid-template-columns: 1fr; }
+      .pillar-num { display: none; }
+      .pillar { padding: 5rem 6vw; }
+    }
+    @media (max-width: 480px) {
+      #hero { padding: 0 6vw; }
+      #sports, #final-cta { padding: 6rem 6vw; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       WHOP CHECKOUT MODAL
+  ════════════════════════════════════════ -->
+  <div id="checkout-modal" role="dialog" aria-modal="true" aria-label="Join Such Is Fantasy on Whop">
+    <div id="modal-backdrop"></div>
+    <div id="modal-box">
+      <div id="modal-header">
+        <span id="modal-brand">Such Is <span>Fantasy</span></span>
+        <button id="modal-close" aria-label="Close checkout">&times;</button>
+      </div>
+      <div id="modal-body">
+        <div id="modal-loading">
+          <div class="spinner"></div>
+          <p>Loading checkout</p>
+        </div>
+        <iframe
+          id="modal-iframe"
+          src=""
+          data-src="https://whop.com/suchisfantasy/"
+          title="Join Such Is Fantasy — Whop Checkout"
+          allow="payment *"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+        <div id="modal-fallback">
+          <p>Your browser blocked the embedded checkout.<br>Open it directly on Whop to join.</p>
+          <a href="https://whop.com/suchisfantasy/" target="_blank" rel="noopener">
+            Continue on Whop →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Noise overlay -->
+  <svg id="noise" xmlns="http://www.w3.org/2000/svg">
+    <filter id="nf">
+      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#nf)"/>
+  </svg>
+
+  <!-- ════════════════════════════════════════
+       HERO — pinned via GSAP ScrollTrigger
+  ════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="glow-a"></div>
+    <div class="glow-b"></div>
+
+    <p class="eyebrow">SCPB — Such Could Be Predicted</p>
+
+    <h1 class="hero-title clash">
+      SUCH IS<br>
+      <span class="accent">FANTASY</span>
+    </h1>
+
+    <p class="tagline">Expert tips. Real-time injury alerts. Community that actually knows the game. NRL, EPL, NBA and NFL — all under one roof.</p>
+
+    <div class="sport-tags">
+      <span class="sport-tag">🏉 NRL</span>
+      <span class="sport-tag">⚽ EPL</span>
+      <span class="sport-tag">🏀 NBA</span>
+      <span class="sport-tag">🏈 NFL</span>
+    </div>
+
+    <div class="cta-wrap">
+      <a href="https://whop.com/suchisfantasy/" class="cta-btn open-checkout">
+        Join the Community →
+      </a>
+      <p class="price-note">$9.99 / month &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; Discord access included</p>
+    </div>
+
+    <span class="scroll-hint">scroll</span>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       PILLARS — stack over pinned hero
+  ════════════════════════════════════════ -->
+  <section id="pillars">
+
+    <div class="pillar">
+      <span class="pillar-num">01</span>
+      <div class="pillar-body">
+        <p class="pillar-label">Contributor Intelligence</p>
+        <h2 class="pillar-title">Expert picks.<br>Before lockout.</h2>
+        <p class="pillar-desc">Our verified contributors break down every round with tips, player analysis and H2H strategies you won't find on public forums.</p>
+        <ul class="feat-list">
+          <li>Round-by-round tips across all four sports</li>
+          <li>Differential picks to beat your H2H rival</li>
+          <li>Trade and waiver wire recommendations</li>
+          <li>Captain strategy for DraftStars, FPL and DraftKings</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <span class="pillar-num">02</span>
+      <div class="pillar-body">
+        <p class="pillar-label">Real-Time Alerts</p>
+        <h2 class="pillar-title">Late mail.<br>First.</h2>
+        <p class="pillar-desc">Injury news, team changes and lineup confirmations the moment they drop — posted directly to your sport's channel so you're never caught off guard at lockout.</p>
+        <ul class="feat-list">
+          <li>RSS-powered injury and team news alerts</li>
+          <li>Dedicated channels for NRL, EPL, NBA and NFL</li>
+          <li>Turn notifications on — never miss a late change</li>
+          <li>Price movement and late scratching updates</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <span class="pillar-num">03</span>
+      <div class="pillar-body">
+        <p class="pillar-label">Community &amp; Competition</p>
+        <h2 class="pillar-title">Compete with<br>the real ones.</h2>
+        <p class="pillar-desc">Rate your team, join community leagues, get honest feedback and compete against members who take fantasy as seriously as you do.</p>
+        <ul class="feat-list">
+          <li>Community leagues across all sports and platforms</li>
+          <li>Team rater — post your squad, get real feedback</li>
+          <li>Q&amp;A with experienced contributors</li>
+          <li>Season-long tipping competitions</li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════════════════════════
+       SPORTS
+  ════════════════════════════════════════ -->
+  <section id="sports">
+    <p class="section-eyebrow">Four sports. One community.</p>
+    <h2 class="section-title clash">All bases covered.</h2>
+
+    <div class="sports-grid">
+
+      <div class="sport-card">
+        <span class="sport-icon">🏉</span>
+        <div class="sport-name clash">NRL</div>
+        <div class="sport-platforms">SuperCoach · DraftStars · H2H</div>
+        <div class="sport-ch-list">
+          <div class="sport-ch"># late-mail-and-team-news</div>
+          <div class="sport-ch"># tips-and-results</div>
+          <div class="sport-ch"># supercoach-draft</div>
+          <div class="sport-ch"># team-rater</div>
+          <div class="sport-ch"># punters</div>
+        </div>
+      </div>
+
+      <div class="sport-card">
+        <span class="sport-icon">⚽</span>
+        <div class="sport-name clash">EPL</div>
+        <div class="sport-platforms">FPL · Fantasy Draft · H2H</div>
+        <div class="sport-ch-list">
+          <div class="sport-ch"># late-mail-and-team-news</div>
+          <div class="sport-ch"># tips-and-results</div>
+          <div class="sport-ch"># fantasy-draft</div>
+          <div class="sport-ch"># team-rater</div>
+          <div class="sport-ch"># punters</div>
+        </div>
+      </div>
+
+      <div class="sport-card">
+        <span class="sport-icon">🏀</span>
+        <div class="sport-name clash">NBA</div>
+        <div class="sport-platforms">DraftKings · Yahoo · ESPN</div>
+        <div class="sport-ch-list">
+          <div class="sport-ch"># late-mail-and-team-news</div>
+          <div class="sport-ch"># tips-and-results</div>
+          <div class="sport-ch"># fantasy-draft</div>
+          <div class="sport-ch"># team-rater</div>
+          <div class="sport-ch"># punters</div>
+        </div>
+      </div>
+
+      <div class="sport-card">
+        <span class="sport-icon">🏈</span>
+        <div class="sport-name clash">NFL</div>
+        <div class="sport-platforms">ESPN · Sleeper · DraftKings · Best Ball</div>
+        <div class="sport-ch-list">
+          <div class="sport-ch"># late-mail-and-team-news</div>
+          <div class="sport-ch"># tips-and-results</div>
+          <div class="sport-ch"># fantasy-draft</div>
+          <div class="sport-ch"># team-rater</div>
+          <div class="sport-ch"># punters</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       FINAL CTA
+  ════════════════════════════════════════ -->
+  <section id="final-cta">
+    <div class="final-glow"></div>
+    <div class="divider-line"></div>
+    <p class="section-eyebrow">Ready to stop guessing?</p>
+    <h2 class="final-title clash">Join Such<br>Is Fantasy</h2>
+    <p class="final-sub">NRL. EPL. NBA. NFL. Expert tips, real-time injury alerts, and a community that takes the game seriously.</p>
+    <a href="https://whop.com/suchisfantasy/" class="cta-btn-lg open-checkout">
+      Get Access for $9.99/mo →
+    </a>
+    <p class="price-note" style="margin-top:1.25rem;">Cancel anytime. Discord included. No lock-in.</p>
+    <p class="footer-note">SCPB — Such Could Be Predicted &nbsp;·&nbsp; 2025</p>
+  </section>
+
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ── Hero entrance ──
+    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    heroTl
+      .to('.eyebrow',     { opacity: 1, y: 0, duration: 0.8, from: { y: 16 } })
+      .from('.hero-title', { y: 70, opacity: 0, duration: 1 }, '-=0.5')
+      .from('.tagline',   { y: 28, opacity: 0, duration: 0.8 }, '-=0.6')
+      .from('.sport-tags',{ y: 18, opacity: 0, duration: 0.6 }, '-=0.5')
+      .from('.cta-wrap',  { y: 18, opacity: 0, duration: 0.6 }, '-=0.4')
+      .from('.scroll-hint',{ opacity: 0, duration: 0.5 }, '-=0.2');
+
+    // Fix: eyebrow starts at opacity 0 via CSS, animate with from
+    gsap.set('.eyebrow', { opacity: 0, y: 16 });
+
+    // ── Pin hero while pillars scroll over ──
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top top',
+      endTrigger: '#pillars',
+      end: 'bottom bottom',
+      pin: true,
+      pinSpacing: false
+    });
+
+    // ── Hero dims as pillars arrive ──
+    gsap.to('#hero', {
+      opacity: 0.25,
+      scale: 0.975,
+      scrollTrigger: {
+        trigger: '#pillars',
+        start: 'top 85%',
+        end: 'top 25%',
+        scrub: true
+      }
+    });
+
+    // ── Pillar content slide in ──
+    gsap.utils.toArray('.pillar').forEach((pillar) => {
+      const body = pillar.querySelector('.pillar-body');
+      const num  = pillar.querySelector('.pillar-num');
+
+      gsap.from(body, {
+        scrollTrigger: {
+          trigger: pillar,
+          start: 'top 72%',
+          toggleActions: 'play none none reverse'
+        },
+        x: -50,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out'
+      });
+
+      if (num) {
+        gsap.from(num, {
+          scrollTrigger: {
+            trigger: pillar,
+            start: 'top 72%',
+            toggleActions: 'play none none reverse'
+          },
+          x: 40,
+          opacity: 0,
+          duration: 0.9,
+          ease: 'power3.out',
+          delay: 0.15
+        });
+      }
+    });
+
+    // ── Sport cards stagger ──
+    gsap.from('.sport-card', {
+      scrollTrigger: {
+        trigger: '.sports-grid',
+        start: 'top 78%',
+        toggleActions: 'play none none reverse'
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.7,
+      stagger: 0.09,
+      ease: 'power3.out'
+    });
+
+    // ── Final CTA ──
+    gsap.from('#final-cta .divider-line, #final-cta .section-eyebrow, #final-cta .final-title, #final-cta .final-sub, #final-cta .cta-btn-lg, #final-cta .price-note', {
+      scrollTrigger: {
+        trigger: '#final-cta',
+        start: 'top 78%',
+        toggleActions: 'play none none reverse'
+      },
+      y: 28,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: 'power3.out'
+    });
+
+    // ── Scroll hint pulse ──
+    gsap.to('.scroll-hint', {
+      opacity: 0.08,
+      duration: 1.6,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    });
+
+    // ── Cleanup ──
+    window.addEventListener('beforeunload', () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    });
+
+    // ── Whop Checkout Modal ──────────────────────────────────────
+    (function () {
+      const modal    = document.getElementById('checkout-modal');
+      const iframe   = document.getElementById('modal-iframe');
+      const loading  = document.getElementById('modal-loading');
+      const fallback = document.getElementById('modal-fallback');
+      let   loaded   = false;
+
+      function openModal() {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        if (!loaded) {
+          loaded = true;
+          iframe.src = iframe.dataset.src;
+
+          // If iframe loads successfully, hide spinner
+          iframe.addEventListener('load', () => {
+            loading.classList.add('hidden');
+            iframe.classList.add('loaded');
+          }, { once: true });
+
+          // Detect X-Frame-Options block (no load fires for blocked frames)
+          // Fall back gracefully after 8 seconds
+          const fallbackTimer = setTimeout(() => {
+            if (!iframe.classList.contains('loaded')) {
+              loading.style.display = 'none';
+              fallback.style.display = 'flex';
+            }
+          }, 8000);
+
+          iframe.addEventListener('load', () => clearTimeout(fallbackTimer), { once: true });
+        }
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      // Trigger from all CTA buttons
+      document.querySelectorAll('.open-checkout').forEach(el => {
+        el.addEventListener('click', e => { e.preventDefault(); openModal(); });
+      });
+
+      // Close handlers
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.getElementById('modal-backdrop').addEventListener('click', closeModal);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+      // Trap focus inside modal when open
+      modal.addEventListener('keydown', e => {
+        if (e.key !== 'Tab') return;
+        const focusable = modal.querySelectorAll('button, a, iframe, [tabindex]:not([tabindex="-1"])');
+        const first = focusable[0];
+        const last  = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+    })();
+  </script>
+</body>
+</html>

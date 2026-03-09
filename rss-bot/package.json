@@ -1,0 +1,16 @@
+{
+  "name": "scpb-rss-bot",
+  "version": "1.0.0",
+  "description": "SCPB RSS injury alert bot — posts team news and injury updates to Discord",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "rss-parser": "^3.13.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
