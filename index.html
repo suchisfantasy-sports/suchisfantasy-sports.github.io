@@ -47,13 +47,181 @@
       opacity: 0.035;
     }
 
+    /* ── Announce Bar ── */
+    #announce-bar {
+      background: rgba(0,240,255,0.05);
+      border-bottom: 1px solid rgba(0,240,255,0.12);
+      padding: 0.55rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    #announce-bar .announce-text {
+      font-size: 0.68rem;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.5);
+    }
+    #announce-bar .announce-text strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+    #announce-bar .announce-cta {
+      flex-shrink: 0;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.07em;
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid rgba(0,240,255,0.25);
+      padding: 0.25rem 0.75rem;
+      border-radius: 2px;
+      white-space: nowrap;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    #announce-bar .announce-cta:hover { background: var(--cyan); color: #000; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 6vw;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(24,24,27,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-link {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: #fff; }
+    .nav-cta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--cyan);
+      color: #000;
+      padding: 0.55rem 1.25rem;
+      border-radius: 2px;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      text-decoration: none;
+      transition: box-shadow 0.2s;
+    }
+    .nav-cta:hover { box-shadow: 0 0 30px rgba(0,240,255,0.35); }
+    .nav-cta:active { transform: scale(0.97); }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: #fff;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* Mobile menu overlay */
+    #mobile-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 190;
+      background: rgba(18,18,21,0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #mobile-menu.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-link {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      transition: color 0.15s;
+    }
+    .mobile-link:hover { color: #fff; }
+    .mobile-cta {
+      margin-top: 1rem;
+      background: var(--cyan);
+      color: #000;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 1rem 2.5rem;
+      border-radius: 2px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .mobile-cta:active { transform: scale(0.97); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+    @media (max-width: 480px) {
+      #announce-bar { padding: 0.55rem 5vw; }
+      #announce-bar .announce-text { font-size: 0.6rem; }
+    }
+
     /* ── Hero ── */
     #hero {
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 5rem 8vw 4rem;
+      min-height: 90vh;
+      padding: 5rem 8vw 5rem;
       overflow: hidden;
     }
 
@@ -142,6 +310,24 @@
     .cta-btn:hover { box-shadow: 0 0 50px rgba(0,240,255,0.35); }
     .cta-btn:active { transform: scale(0.97); }
 
+    .cta-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.7);
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 1rem 2.25rem;
+      border-radius: 2px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cta-ghost:hover { border-color: rgba(255,255,255,0.45); color: #fff; }
+    .cta-ghost:active { transform: scale(0.97); }
+
     .price-note {
       margin-top: 0.9rem;
       font-size: 0.7rem;
@@ -153,11 +339,110 @@
       position: absolute;
       bottom: 2.5rem;
       right: 8vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.6rem;
       letter-spacing: 0.35em;
       color: rgba(255,255,255,0.25);
       text-transform: uppercase;
-      writing-mode: vertical-rl;
+    }
+    .scroll-hint-line {
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+    }
+
+    /* ── Proof Bar ── */
+    #proof-bar {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 2.5rem 8vw;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+    }
+    .proof-item {
+      padding: 0 2rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+    .proof-item:first-child { padding-left: 0; }
+    .proof-item:last-child { border-right: none; }
+    .proof-num {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .proof-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+    }
+    @media (max-width: 640px) {
+      #proof-bar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 0;
+      }
+      .proof-item {
+        padding: 0 1rem;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding-bottom: 1.5rem;
+      }
+      .proof-item:nth-child(3), .proof-item:nth-child(4) {
+        border-bottom: none;
+        padding-top: 0;
+      }
+      .proof-item:first-child { padding-left: 1rem; }
+    }
+
+    /* ── Sports Ticker ── */
+    #ticker {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 0.75rem 0;
+      overflow: hidden;
+    }
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: ticker-scroll 40s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      padding: 0 2.5rem;
+      flex-shrink: 0;
+    }
+    .ticker-item .ticker-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+    }
+    .ticker-item.hot .ticker-dot { background: var(--magenta); }
+    .ticker-item.hot { color: rgba(255,255,255,0.55); }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
     /* ── Pillars ── */
@@ -237,15 +522,31 @@
       margin-top: 0.05em;
     }
 
-    /* ── Sports grid ── */
-    #sports {
-      position: relative;
-      z-index: 10;
-      background: var(--zinc);
-      padding: 5rem 8vw;
+    /* ── Inline CTA strip ── */
+    .inline-cta-strip {
+      padding: 3rem 8vw;
       border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+      position: relative;
+      background: var(--zinc);
+    }
+    .inline-cta-strip p {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.8);
+    }
+    .inline-cta-strip p em {
+      color: var(--cyan);
+      font-style: normal;
     }
 
+    /* ── Section commons ── */
     .section-eyebrow {
       font-size: 0.7rem;
       letter-spacing: 0.35em;
@@ -260,6 +561,226 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       margin-bottom: 2.25rem;
+    }
+
+    /* ── Content Engine ── */
+    #content-engine {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 5rem 8vw;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-top: 2.5rem;
+    }
+
+    .week-col {
+      background: var(--zinc2);
+      padding: 1.25rem 1rem;
+    }
+    .week-col:hover { background: rgba(0,240,255,0.025); }
+
+    .week-day {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .week-items {
+      display: flex;
+       flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .week-item {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.4;
+    }
+    .week-item.hot {
+      color: var(--cyan);
+    }
+    .week-item.mag {
+      color: var(--magenta);
+    }
+
+    @media (max-width: 900px) {
+      .week-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
+      .week-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ── Membership Tiers ── */
+    #membership {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 5rem 8vw;
+    }
+
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-top: 2.5rem;
+    }
+
+    .tier-card {
+      background: var(--zinc);
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: background 0.3s ease;
+    }
+    .tier-card:hover { background: rgba(255,255,255,0.02); }
+    .tier-card.featured {
+      background: rgba(0,240,255,0.04);
+    }
+    .tier-card.featured:hover { background: rgba(0,240,255,0.07); }
+
+    .tier-badge {
+      display: inline-block;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #000;
+      background: var(--cyan);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tier-name {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .tier-price {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 700;
+      color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .tier-price .tier-freq {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      font-weight: 400;
+    }
+    .tier-alt {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .tier-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 2rem;
+    }
+    .tier-features li {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      line-height: 1.5;
+    }
+    .tier-features li::before {
+      content: '✓';
+      color: var(--cyan);
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      margin-top: 0.1em;
+    }
+    .tier-features li.locked {
+      color: rgba(255,255,255,0.2);
+    }
+    .tier-features li.locked::before {
+      content: '—';
+      color: rgba(255,255,255,0.15);
+    }
+
+    .tier-cta {
+      display: block;
+      text-align: center;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      padding: 0.85rem 1.5rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .tier-cta.solid {
+      background: var(--cyan);
+      color: #000;
+    }
+    .tier-cta.solid:hover { box-shadow: 0 0 40px rgba(0,240,255,0.35); }
+    .tier-cta.outline {
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+    }
+    .tier-cta.outline:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+    .tier-cta:active { transform: scale(0.97); }
+
+    .tier-guarantee {
+      margin-top: 1.5rem;
+      font-size: 0.63rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .tier-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Tools teaser ── */
+    #tools-teaser {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 4rem 8vw;
+    }
+
+    /* ── Sports grid ── */
+    #sports {
+      position: relative;
+      z-index: 10;
+      background: var(--zinc);
+      padding: 5rem 8vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
 
     .sports-grid {
@@ -375,50 +896,112 @@
     .cta-btn-lg:hover { box-shadow: 0 0 60px rgba(0,240,255,0.4); }
     .cta-btn-lg:active { transform: scale(0.97); }
 
-    .footer-note {
-      color: rgba(255,255,255,0.18);
-      font-size: 0.65rem;
-      margin-top: 6rem;
-      letter-spacing: 0.12em;
+    .social-proof {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.28);
       text-transform: uppercase;
+      margin-bottom: 1.5rem;
     }
 
     /* ── Footer ── */
     footer {
-      padding: 2rem 6vw;
+      padding: 4rem 6vw 2.5rem;
       border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
     }
-    footer .footer-logo {
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand {}
+    .footer-logo {
       font-family: 'Clash Display', sans-serif;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #fff;
       text-decoration: none;
+      letter-spacing: -0.01em;
+      display: inline-block;
+      margin-bottom: 0.75rem;
     }
-    footer .footer-logo span { color: var(--cyan); }
-    footer .footer-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-    footer .footer-links a {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+    .footer-logo span { color: var(--cyan); }
+    .footer-tagline {
+      font-size: 0.72rem;
       color: rgba(255,255,255,0.3);
+      line-height: 1.7;
+      max-width: 240px;
+      margin-bottom: 1.25rem;
+    }
+    .footer-socials {
+      display: flex;
+      gap: 1rem;
+    }
+    .footer-social {
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
       text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .footer-social:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .footer-col-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 1.25rem;
+    }
+    .footer-col-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .footer-col-links a {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      letter-spacing: 0.02em;
       transition: color 0.15s;
     }
-    footer .footer-links a:hover { color: rgba(255,255,255,0.7); }
-    footer .footer-whop {
-      font-size: 0.65rem;
-      color: var(--cyan);
-      text-decoration: none;
-      letter-spacing: 0.1em;
+    .footer-col-links a:hover { color: rgba(255,255,255,0.85); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-copy {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.08em;
+    }
+    .footer-disclaimer {
+      font-size: 0.58rem;
+      color: rgba(255,255,255,0.14);
+      max-width: 420px;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    }
+    @media (max-width: 560px) {
+      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-disclaimer { text-align: left; }
     }
 
     /* ── Whop Checkout Modal ── */
@@ -570,156 +1153,29 @@
       text-decoration: none;
     }
 
-    /* ── Nav ── */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 6vw;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      background: rgba(24,24,27,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .nav-logo {
-      font-family: 'Clash Display', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
-      text-decoration: none;
-      letter-spacing: -0.01em;
-    }
-    .nav-logo span { color: var(--cyan); }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-    .nav-link {
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.45);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    .nav-link:hover { color: #fff; }
-    .nav-cta {
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: var(--cyan);
-      color: #000;
-      padding: 0.55rem 1.25rem;
-      border-radius: 2px;
-      font-family: 'Clash Display', sans-serif;
-      font-weight: 700;
-      text-decoration: none;
-      transition: box-shadow 0.2s;
-    }
-    .nav-cta:hover { box-shadow: 0 0 30px rgba(0,240,255,0.35); }
-    @media (max-width: 600px) {
-      .nav-links { gap: 1rem; }
-      .nav-link { display: none; }
-    }
-
-    /* ── Announcement Banner ── */
-    #announce-bar {
-      background: rgba(0,240,255,0.05);
-      border-bottom: 1px solid rgba(0,240,255,0.12);
-      padding: 0.55rem 6vw;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    #announce-bar .announce-text {
-      font-size: 0.68rem;
-      letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.5);
-    }
-    #announce-bar .announce-text strong {
-      color: rgba(255,255,255,0.85);
-      font-weight: 500;
-    }
-    #announce-bar .announce-cta {
-      flex-shrink: 0;
-      font-family: 'Clash Display', sans-serif;
-      font-weight: 700;
-      font-size: 0.65rem;
-      letter-spacing: 0.07em;
-      color: var(--cyan);
-      text-decoration: none;
-      border: 1px solid rgba(0,240,255,0.25);
-      padding: 0.25rem 0.75rem;
-      border-radius: 2px;
-      white-space: nowrap;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-    #announce-bar .announce-cta:hover { background: var(--cyan); color: #000; }
-
-    /* ── Inline CTA strip ── */
-    .inline-cta-strip {
-      padding: 3rem 8vw;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-      flex-wrap: wrap;
-      position: relative;
-      background: var(--zinc);
-    }
-    .inline-cta-strip p {
-      font-family: 'Clash Display', sans-serif;
-      font-size: clamp(1.3rem, 3vw, 2rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: rgba(255,255,255,0.8);
-    }
-    .inline-cta-strip p em {
-      color: var(--cyan);
-      font-style: normal;
-    }
-
-    /* ── Social proof ── */
-    .social-proof {
-      font-size: 0.7rem;
-      letter-spacing: 0.18em;
-      color: rgba(255,255,255,0.28);
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-    }
-
-    /* ── Responsive ── */
+    /* ── Responsive tweaks ── */
     @media (max-width: 768px) {
       .sports-grid { grid-template-columns: 1fr; }
       .pillar-num { display: none; }
       .pillar { padding: 3rem 6vw; }
       .inline-cta-strip { flex-direction: column; align-items: flex-start; }
-      #announce-bar { padding: 0.55rem 5vw; }
-      #announce-bar .announce-text { font-size: 0.65rem; }
     }
     @media (max-width: 480px) {
-      #hero { padding: 0 6vw; }
-      #sports, #final-cta { padding: 4rem 6vw; }
+      #hero { padding: 4rem 6vw; }
+      #sports, #final-cta, #membership, #content-engine, #tools-teaser { padding: 3.5rem 6vw; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── Nav ── -->
-  <nav>
-    <a href="index.html" class="nav-logo">Such Is <span>Fantasy</span></a>
-    <div class="nav-links">
-      <a href="tools.html" class="nav-link">Tools</a>
-      <a href="https://whop.com/suchisfantasy/" target="_blank" class="nav-link">Community</a>
-      <a href="https://whop.com/suchisfantasy/" class="nav-cta open-checkout">Join Now →</a>
-    </div>
-  </nav>
+  <!-- ── Noise overlay ── -->
+  <svg id="noise" xmlns="http://www.w3.org/2000/svg">
+    <filter id="nf">
+      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#nf)"/>
+  </svg>
 
   <!-- ── Announcement Banner ── -->
   <div id="announce-bar">
@@ -727,9 +1183,31 @@
     <a href="https://whop.com/suchisfantasy/" class="announce-cta open-checkout">Claim It →</a>
   </div>
 
-  <!-- ════════════════════════════════════════
+  <!-- ── Nav ── -->
+  <nav id="main-nav">
+    <a href="index.html" class="nav-logo">Such Is <span>Fantasy</span></a>
+    <div class="nav-links">
+      <a href="tools.html" class="nav-link">Tools</a>
+      <a href="#membership" class="nav-link">Membership</a>
+      <a href="https://whop.com/suchisfantasy/" target="_blank" class="nav-link">Community</a>
+      <a href="https://whop.com/suchisfantasy/" class="nav-cta open-checkout">Join Now →</a>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── Mobile Menu ── -->
+  <div id="mobile-menu" role="dialog" aria-label="Navigation menu">
+    <a href="tools.html" class="mobile-link">Tools</a>
+    <a href="#membership" class="mobile-link close-mobile">Membership</a>
+    <a href="https://whop.com/suchisfantasy/" target="_blank" class="mobile-link">Community</a>
+    <a href="https://whop.com/suchisfantasy/" class="mobile-cta open-checkout close-mobile">Join Now →</a>
+  </div>
+
+  <!-- ══════════════════════════════════════
        WHOP CHECKOUT MODAL
-  ════════════════════════════════════════ -->
+  ══════════════════════════════════════ -->
   <div id="checkout-modal" role="dialog" aria-modal="true" aria-label="Join Such Is Fantasy on Whop">
     <div id="modal-backdrop"></div>
     <div id="modal-box">
@@ -760,30 +1238,21 @@
     </div>
   </div>
 
-  <!-- Noise overlay -->
-  <svg id="noise" xmlns="http://www.w3.org/2000/svg">
-    <filter id="nf">
-      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch"/>
-      <feColorMatrix type="saturate" values="0"/>
-    </filter>
-    <rect width="100%" height="100%" filter="url(#nf)"/>
-  </svg>
-
-  <!-- ════════════════════════════════════════
-       HERO — pinned via GSAP ScrollTrigger
-  ════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       HERO
+  ══════════════════════════════════════ -->
   <section id="hero">
     <div class="glow-a"></div>
     <div class="glow-b"></div>
 
-    <p class="eyebrow">SCPB — Such Could Be Predicted</p>
+    <p class="eyebrow">NRL · EPL · NBA · NFL</p>
 
     <h1 class="hero-title clash">
       SUCH IS<br>
       <span class="accent">FANTASY</span>
     </h1>
 
-    <p class="tagline">Expert tips. Real-time injury alerts. Community that actually knows the game. NRL, EPL, NBA and NFL — all under one roof.</p>
+    <p class="tagline">Expert tips. Real-time injury alerts. Community that actually knows the game. Four sports, one roof.</p>
 
     <div class="sport-tags">
       <span class="sport-tag">🏉 NRL</span>
@@ -792,19 +1261,71 @@
       <span class="sport-tag">🏈 NFL</span>
     </div>
 
-    <div class="cta-wrap">
+    <div class="cta-wrap" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
       <a href="https://whop.com/suchisfantasy/" class="cta-btn open-checkout">
         Join the Community →
       </a>
-      <p class="price-note">Less than a coffee a week &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; Discord included</p>
+      <a href="#membership" class="cta-ghost">See Plans</a>
     </div>
+    <p class="price-note" style="margin-top:0.9rem;">Less than a coffee a week &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; Discord included</p>
 
-    <span class="scroll-hint">scroll</span>
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-hint-line"></div>
+    </div>
   </section>
 
-  <!-- ════════════════════════════════════════
-       PILLARS — stack over pinned hero
-  ════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       PROOF BAR
+  ══════════════════════════════════════ -->
+  <div id="proof-bar">
+    <div class="proof-item">
+      <div class="proof-num">5K+</div>
+      <div class="proof-label">Community members</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-num">4</div>
+      <div class="proof-label">Sports covered</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-num">52</div>
+      <div class="proof-label">Weeks of content</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-num">73%</div>
+      <div class="proof-label">Captain pick accuracy</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SPORTS TICKER
+  ══════════════════════════════════════ -->
+  <div id="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span class="ticker-item hot"><span class="ticker-dot"></span>NRL Round tips live</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>SuperCoach price changes</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>EPL GW captain picks</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>FPL differential watch</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>NBA DFS slate analysis</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Injury intel — DraftKings</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>NFL waiver wire targets</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Best Ball picks — Sleeper</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Late mail alerts — Discord</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>NRL Round tips live</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>SuperCoach price changes</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>EPL GW captain picks</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>FPL differential watch</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>NBA DFS slate analysis</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Injury intel — DraftKings</span>
+      <span class="ticker-item hot"><span class="ticker-dot"></span>NFL waiver wire targets</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Best Ball picks — Sleeper</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Late mail alerts — Discord</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PILLARS
+  ══════════════════════════════════════ -->
   <section id="pillars">
 
     <div class="pillar">
@@ -860,10 +1381,146 @@
 
   </section>
 
-  <!-- ════════════════════════════════════════
+  <!-- ══════════════════════════════════════
+       CONTENT ENGINE
+  ══════════════════════════════════════ -->
+  <section id="content-engine">
+    <p class="section-eyebrow">52 weeks a year — no off-season</p>
+    <h2 class="section-title clash">What drops every week.</h2>
+
+    <div class="week-grid">
+      <div class="week-col">
+        <div class="week-day">Mon</div>
+        <div class="week-items">
+          <div class="week-item hot">NRL debrief</div>
+          <div class="week-item">Price changes</div>
+          <div class="week-item">EPL GW recap</div>
+        </div>
+      </div>
+      <div class="week-col">
+        <div class="week-day">Tue</div>
+        <div class="week-items">
+          <div class="week-item hot">Trade targets</div>
+          <div class="week-item">Injury watch</div>
+          <div class="week-item">DFS research</div>
+        </div>
+      </div>
+      <div class="week-col">
+        <div class="week-day">Wed</div>
+        <div class="week-items">
+          <div class="week-item">Buy/hold/sell</div>
+          <div class="week-item hot">NBA slate prep</div>
+          <div class="week-item">Waiver targets</div>
+        </div>
+      </div>
+      <div class="week-col">
+        <div class="week-day">Thu</div>
+        <div class="week-items">
+          <div class="week-item hot">Captain short-list</div>
+          <div class="week-item">Differential picks</div>
+          <div class="week-item">Price predictor</div>
+        </div>
+      </div>
+      <div class="week-col">
+        <div class="week-day">Fri</div>
+        <div class="week-items">
+          <div class="week-item mag">Live Trade Room</div>
+          <div class="week-item hot">Team news drops</div>
+          <div class="week-item">NRL locks</div>
+        </div>
+      </div>
+      <div class="week-col">
+        <div class="week-day">Sat</div>
+        <div class="week-items">
+          <div class="week-item hot">Final captain call</div>
+          <div class="week-item mag">Late mail — live</div>
+          <div class="week-item">EPL lineup check</div>
+        </div>
+      </div>
+      <div class="week-col">
+        <div class="week-day">Sun</div>
+        <div class="week-items">
+          <div class="week-item">NFL roundup</div>
+          <div class="week-item hot">Podcast episode</div>
+          <div class="week-item">Week-ahead preview</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       MEMBERSHIP TIERS
+  ══════════════════════════════════════ -->
+  <section id="membership">
+    <p class="section-eyebrow">Simple pricing — cancel anytime</p>
+    <h2 class="section-title clash">Pick your plan.</h2>
+
+    <div class="tier-grid">
+
+      <!-- Free -->
+      <div class="tier-card">
+        <div class="tier-name">Free</div>
+        <div class="tier-price">$0</div>
+        <div class="tier-alt">Forever free</div>
+        <ul class="tier-features">
+          <li>Discord community access</li>
+          <li>1 trade tip per week</li>
+          <li>Public podcast episodes</li>
+          <li>Free tools: break-even + price change</li>
+          <li class="locked">Real-time injury alerts</li>
+          <li class="locked">Captain picks</li>
+          <li class="locked">Live Trade Room</li>
+          <li class="locked">DFS optimizer</li>
+        </ul>
+        <a href="https://discord.gg/suchisfantasy" target="_blank" class="tier-cta outline">Join Discord Free →</a>
+      </div>
+
+      <!-- Fantasy Edge (featured) -->
+      <div class="tier-card featured">
+        <div class="tier-badge">Most Popular</div>
+        <div class="tier-name">Fantasy Edge</div>
+        <div class="tier-price">$9.99 <span class="tier-freq">/mo</span></div>
+        <div class="tier-alt">Founding member pricing — locked in for life</div>
+        <ul class="tier-features">
+          <li>Everything in Free</li>
+          <li>Full weekly analysis — all 4 sports</li>
+          <li>Real-time injury &amp; team news alerts</li>
+          <li>Captain picks + differential targets</li>
+          <li>Trade calculator &amp; bye planner</li>
+          <li>Buy/hold/sell lists every week</li>
+          <li>Q&amp;A with contributors</li>
+          <li class="locked">Live Trade Room (Fridays)</li>
+        </ul>
+        <a href="https://whop.com/suchisfantasy/" class="tier-cta solid open-checkout">Get Fantasy Edge →</a>
+        <p class="tier-guarantee">30-day money-back guarantee</p>
+      </div>
+
+      <!-- Fantasy Lab -->
+      <div class="tier-card">
+        <div class="tier-name">Fantasy Lab</div>
+        <div class="tier-price">$24.99 <span class="tier-freq">/mo</span></div>
+        <div class="tier-alt">Founding member pricing — locked in for life</div>
+        <ul class="tier-features">
+          <li>Everything in Fantasy Edge</li>
+          <li>Live Trade Room — Fridays with experts</li>
+          <li>Projection spreadsheets + squad builder</li>
+          <li>DFS slate optimizer (DraftStars, DraftKings)</li>
+          <li>Matchup analysis &amp; advanced stats</li>
+          <li>Priority roster reviews</li>
+          <li>Early access to all new tools</li>
+          <li>Direct contributor access</li>
+        </ul>
+        <a href="https://whop.com/suchisfantasy/" class="tier-cta outline open-checkout">Get Fantasy Lab →</a>
+        <p class="tier-guarantee">30-day money-back guarantee</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
        TOOLS TEASER
-  ════════════════════════════════════════ -->
-  <section style="position:relative;z-index:10;background:var(--zinc2);border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:4rem 8vw;">
+  ══════════════════════════════════════ -->
+  <section id="tools-teaser">
     <p class="section-eyebrow">Fantasy Tools — NRL · SuperCoach · Draftstars</p>
     <h2 class="section-title clash" style="max-width:640px;margin-bottom:1rem">Every calculator<br>you need to win.</h2>
     <p style="font-size:0.82rem;color:rgba(255,255,255,0.45);max-width:520px;line-height:1.85;margin-bottom:2.5rem">Break-even, price change predictor, trade calculator, bye planner, Draftstars optimizer, matchup analysis, squad builder — all in one place. Free tools open to everyone. Advanced tools for Fantasy Lab members.</p>
@@ -879,9 +1536,9 @@
     <a href="tools.html" class="cta-btn" style="display:inline-flex">Open Fantasy Tools →</a>
   </section>
 
-  <!-- ════════════════════════════════════════
+  <!-- ══════════════════════════════════════
        SPORTS
-  ════════════════════════════════════════ -->
+  ══════════════════════════════════════ -->
   <section id="sports">
     <p class="section-eyebrow">Four sports. One community.</p>
     <h2 class="section-title clash">All bases covered.</h2>
@@ -943,9 +1600,9 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════
+  <!-- ══════════════════════════════════════
        FINAL CTA
-  ════════════════════════════════════════ -->
+  ══════════════════════════════════════ -->
   <section id="final-cta">
     <div class="final-glow"></div>
     <div class="divider-line"></div>
@@ -961,32 +1618,91 @@
 
   <!-- ── Footer ── -->
   <footer>
-    <a href="index.html" class="footer-logo">Such Is <span>Fantasy</span></a>
-    <div class="footer-links">
-      <a href="tools.html">Fantasy Tools</a>
-      <a href="https://whop.com/suchisfantasy/" target="_blank">Community</a>
-      <a href="https://whop.com/suchisfantasy/" target="_blank">Join</a>
+    <div class="footer-top">
+
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">Such Is <span>Fantasy</span></a>
+        <p class="footer-tagline">Expert fantasy sports intelligence for NRL, EPL, NBA and NFL. Tips, alerts, and community — all under one roof.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social" aria-label="X / Twitter">𝕏</a>
+          <a href="#" class="footer-social" aria-label="YouTube">▶</a>
+          <a href="#" class="footer-social" aria-label="TikTok">♪</a>
+          <a href="https://discord.gg/suchisfantasy" target="_blank" class="footer-social" aria-label="Discord">◈</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-label">Content</div>
+        <div class="footer-col-links">
+          <a href="#">Weekly Tips</a>
+          <a href="#">Captain Picks</a>
+          <a href="#">Injury Intel</a>
+          <a href="#">Podcast</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-label">Community</div>
+        <div class="footer-col-links">
+          <a href="https://discord.gg/suchisfantasy" target="_blank">Discord</a>
+          <a href="#">Team Rater</a>
+          <a href="#">Leagues</a>
+          <a href="#">Tipping Comp</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-label">Products</div>
+        <div class="footer-col-links">
+          <a href="tools.html">Fantasy Tools</a>
+          <a href="#membership">Fantasy Edge</a>
+          <a href="#membership">Fantasy Lab</a>
+          <a href="https://whop.com/suchisfantasy/" target="_blank">Join on Whop</a>
+        </div>
+      </div>
+
     </div>
-    <a href="https://whop.com/suchisfantasy/" target="_blank" class="footer-whop">whop.com/suchisfantasy →</a>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Such Is Fantasy. All rights reserved.</p>
+      <p class="footer-disclaimer">Fantasy sports involve risk. Past pick accuracy does not guarantee future results. Please play responsibly.</p>
+    </div>
   </footer>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
     // ── Hero entrance ──
+    gsap.set('.eyebrow', { opacity: 0, y: 16 });
     const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
     heroTl
-      .to('.eyebrow',     { opacity: 1, y: 0, duration: 0.8, from: { y: 16 } })
+      .to('.eyebrow',      { opacity: 1, y: 0, duration: 0.8 })
       .from('.hero-title', { y: 70, opacity: 0, duration: 1 }, '-=0.5')
-      .from('.tagline',   { y: 28, opacity: 0, duration: 0.8 }, '-=0.6')
-      .from('.sport-tags',{ y: 18, opacity: 0, duration: 0.6 }, '-=0.5')
-      .from('.cta-wrap',  { y: 18, opacity: 0, duration: 0.6 }, '-=0.4')
+      .from('.tagline',    { y: 28, opacity: 0, duration: 0.8 }, '-=0.6')
+      .from('.sport-tags', { y: 18, opacity: 0, duration: 0.6 }, '-=0.5')
+      .from('.cta-wrap',   { y: 18, opacity: 0, duration: 0.6 }, '-=0.4')
+      .from('.price-note', { opacity: 0, duration: 0.5 }, '-=0.3')
       .from('.scroll-hint',{ opacity: 0, duration: 0.5 }, '-=0.2');
 
-    // Fix: eyebrow starts at opacity 0 via CSS, animate with from
-    gsap.set('.eyebrow', { opacity: 0, y: 16 });
+    // ── Scroll hint pulse ──
+    gsap.to('.scroll-hint-line', {
+      scaleY: 0.3,
+      transformOrigin: 'top center',
+      duration: 1.4,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    });
 
-    // Hero pin removed — content flows directly into pillars
+    // ── Proof bar count-up ──
+    gsap.from('.proof-item', {
+      scrollTrigger: { trigger: '#proof-bar', start: 'top 82%', toggleActions: 'play none none reverse' },
+      y: 24,
+      opacity: 0,
+      duration: 0.7,
+      stagger: 0.1,
+      ease: 'power3.out'
+    });
 
     // ── Pillar content slide in ──
     gsap.utils.toArray('.pillar').forEach((pillar) => {
@@ -1021,6 +1737,26 @@
       }
     });
 
+    // ── Content engine columns ──
+    gsap.from('.week-col', {
+      scrollTrigger: { trigger: '.week-grid', start: 'top 78%', toggleActions: 'play none none reverse' },
+      y: 30,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.07,
+      ease: 'power3.out'
+    });
+
+    // ── Tier cards ──
+    gsap.from('.tier-card', {
+      scrollTrigger: { trigger: '.tier-grid', start: 'top 78%', toggleActions: 'play none none reverse' },
+      y: 40,
+      opacity: 0,
+      duration: 0.7,
+      stagger: 0.12,
+      ease: 'power3.out'
+    });
+
     // ── Sport cards stagger ──
     gsap.from('.sport-card', {
       scrollTrigger: {
@@ -1037,11 +1773,7 @@
 
     // ── Final CTA ──
     gsap.from('#final-cta .divider-line, #final-cta .section-eyebrow, #final-cta .final-title, #final-cta .final-sub, #final-cta .cta-btn-lg, #final-cta .price-note', {
-      scrollTrigger: {
-        trigger: '#final-cta',
-        start: 'top 78%',
-        toggleActions: 'play none none reverse'
-      },
+      scrollTrigger: { trigger: '#final-cta', start: 'top 78%', toggleActions: 'play none none reverse' },
       y: 28,
       opacity: 0,
       duration: 0.8,
@@ -1049,21 +1781,51 @@
       ease: 'power3.out'
     });
 
-    // ── Scroll hint pulse ──
-    gsap.to('.scroll-hint', {
-      opacity: 0.08,
-      duration: 1.6,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut'
-    });
-
     // ── Cleanup ──
     window.addEventListener('beforeunload', () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
     });
 
-    // ── Whop Checkout Modal ──────────────────────────────────────
+    // ── Mobile hamburger ──
+    const hamburger   = document.getElementById('hamburger');
+    const mobileMenu  = document.getElementById('mobile-menu');
+
+    function openMobileMenu() {
+      mobileMenu.classList.add('open');
+      hamburger.classList.add('open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+    });
+
+    document.querySelectorAll('.close-mobile').forEach(el => {
+      el.addEventListener('click', closeMobileMenu);
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMobileMenu();
+    });
+
+    // ── Smooth scroll for anchor links ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ── Whop Checkout Modal ──
     (function () {
       const modal    = document.getElementById('checkout-modal');
       const iframe   = document.getElementById('modal-iframe');
@@ -1079,14 +1841,11 @@
           loaded = true;
           iframe.src = iframe.dataset.src;
 
-          // If iframe loads successfully, hide spinner
           iframe.addEventListener('load', () => {
             loading.classList.add('hidden');
             iframe.classList.add('loaded');
           }, { once: true });
 
-          // Detect X-Frame-Options block (no load fires for blocked frames)
-          // Fall back gracefully after 8 seconds
           const fallbackTimer = setTimeout(() => {
             if (!iframe.classList.contains('loaded')) {
               loading.style.display = 'none';
@@ -1103,17 +1862,16 @@
         document.body.style.overflow = '';
       }
 
-      // Trigger from all CTA buttons
       document.querySelectorAll('.open-checkout').forEach(el => {
         el.addEventListener('click', e => { e.preventDefault(); openModal(); });
       });
 
-      // Close handlers
       document.getElementById('modal-close').addEventListener('click', closeModal);
       document.getElementById('modal-backdrop').addEventListener('click', closeModal);
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      });
 
-      // Trap focus inside modal when open
       modal.addEventListener('keydown', e => {
         if (e.key !== 'Tab') return;
         const focusable = modal.querySelectorAll('button, a, iframe, [tabindex]:not([tabindex="-1"])');
