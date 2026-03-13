@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Tools — Such Is Fantasy</title>
+  <meta name="description" content="NRL Fantasy & SuperCoach calculators — break-even, price change predictor, trade calculator, bye planner, Draftstars optimizer, matchup analysis, squad builder.">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --zinc:    #18181B;
+      --zinc2:   #1f1f22;
+      --zinc3:   #27272a;
+      --zinc4:   #3f3f46;
+      --cyan:    #00F0FF;
+      --magenta: #FF003C;
+      --white:   #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--zinc);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+      min-height: 100dvh;
+    }
+    .clash { font-family: 'Clash Display', sans-serif; }
+
+    /* noise overlay */
+    #noise {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999;
+      opacity: 0.03;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 6vw;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(24,24,27,0.92);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: #fff; text-decoration: none; letter-spacing: -0.01em;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-cta {
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--cyan); color: #000;
+      padding: 0.55rem 1.25rem; border-radius: 2px;
+      font-family: 'Clash Display', sans-serif; font-weight: 700;
+      text-decoration: none; transition: box-shadow 0.2s;
+    }
+    .nav-cta:hover { box-shadow: 0 0 30px rgba(0,240,255,0.35); }
+
+    /* ── HEADER ── */
+    .page-header {
+      padding: 3.5rem 6vw 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .eyebrow {
+      font-size: 0.65rem; letter-spacing: 0.35em;
+      color: var(--cyan); text-transform: uppercase; margin-bottom: 0.75rem;
+    }
+    .page-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 700; line-height: 0.9;
+      letter-spacing: -0.025em; margin-bottom: 0.75rem;
+    }
+    .page-title span { color: var(--cyan); }
+    .page-sub {
+      font-size: 0.8rem; color: rgba(255,255,255,0.45);
+      max-width: 500px; line-height: 1.7;
+    }
+
+    /* ── ACCESS BANNER ── */
+    #access-banner {
+      background: rgba(0,240,255,0.06);
+      border: 1px solid rgba(0,240,255,0.2);
+      border-radius: 4px;
+      padding: 0.9rem 1.25rem;
+      margin: 1.25rem 6vw;
+      display: flex; align-items: center; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    #access-banner p { font-size: 0.72rem; color: rgba(255,255,255,0.6); flex: 1; }
+    #access-banner p strong { color: var(--cyan); }
+    .unlock-form { display: flex; gap: 0.5rem; }
+    #code-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,240,255,0.3);
+      color: #fff; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; padding: 0.5rem 0.75rem;
+      border-radius: 2px; width: 160px;
+      outline: none;
+    }
+    #code-input:focus { border-color: var(--cyan); }
+    #unlock-btn {
+      background: var(--cyan); color: #000;
+      font-family: 'Clash Display', sans-serif; font-weight: 700;
+      font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 0.5rem 1rem; border-radius: 2px; border: none;
+      cursor: pointer; transition: box-shadow 0.2s;
+    }
+    #unlock-btn:hover { box-shadow: 0 0 20px rgba(0,240,255,0.35); }
+    #code-status { font-size: 0.65rem; }
+    #access-banner.unlocked { border-color: rgba(0,230,118,0.4); background: rgba(0,230,118,0.05); }
+
+    /* ── LAYOUT ── */
+    .tools-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: calc(100dvh - 200px);
+    }
+    @media (max-width: 768px) {
+      .tools-layout { grid-template-columns: 1fr; }
+      .tool-sidebar { display: flex; overflow-x: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0.5rem; gap: 0.35rem; }
+      .tool-nav-btn { white-space: nowrap; padding: 0.55rem 1rem !important; }
+    }
+
+    /* ── SIDEBAR ── */
+    .tool-sidebar {
+      border-right: 1px solid rgba(255,255,255,0.07);
+      padding: 1.25rem 0.75rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .sidebar-label {
+      font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.25); padding: 0.5rem 0.75rem 0.25rem;
+    }
+    .tool-nav-btn {
+      display: flex; align-items: center; gap: 0.65rem;
+      background: none; border: none; color: rgba(255,255,255,0.5);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+      padding: 0.65rem 0.75rem; border-radius: 3px;
+      cursor: pointer; text-align: left; width: 100%;
+      transition: all 0.15s; position: relative;
+    }
+    .tool-nav-btn:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .tool-nav-btn.active { background: rgba(0,240,255,0.08); color: var(--cyan); }
+    .tool-nav-btn.active::before {
+      content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+      width: 2px; background: var(--cyan); border-radius: 0 2px 2px 0;
+    }
+    .tool-badge {
+      margin-left: auto; font-size: 0.55rem; letter-spacing: 0.08em;
+      padding: 0.2rem 0.45rem; border-radius: 2px; text-transform: uppercase;
+    }
+    .badge-free  { background: rgba(0,230,118,0.12); color: #00e676; }
+    .badge-edge  { background: rgba(0,100,255,0.15); color: #4db3ff; }
+    .badge-lab   { background: rgba(255,0,60,0.12);  color: var(--magenta); }
+    .badge-lab.unlocked { background: rgba(255,0,60,0.25); }
+
+    /* ── MAIN PANEL ── */
+    .tool-main { padding: 2rem 2.5rem; }
+    @media (max-width: 768px) { .tool-main { padding: 1.5rem 1.25rem; } }
+
+    .tool-panel { display: none; }
+    .tool-panel.active { display: block; }
+
+    .tool-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+    .tool-desc {
+      font-size: 0.72rem; color: rgba(255,255,255,0.4); line-height: 1.7;
+      margin-bottom: 1.75rem; max-width: 560px;
+    }
+
+    /* ── FORM ── */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-label { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+    .form-input, .form-select {
+      background: var(--zinc2); border: 1px solid rgba(255,255,255,0.08);
+      color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      padding: 0.65rem 0.85rem; border-radius: 3px; outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus { border-color: rgba(0,240,255,0.4); }
+    .form-select option { background: var(--zinc3); }
+    .form-hint { font-size: 0.58rem; color: rgba(255,255,255,0.2); margin-top: 0.2rem; }
+
+    .calc-btn {
+      background: var(--cyan); color: #000;
+      font-family: 'Clash Display', sans-serif; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 0.02em;
+      padding: 0.85rem 2rem; border-radius: 3px; border: none;
+      cursor: pointer; transition: box-shadow 0.2s, transform 0.1s;
+    }
+    .calc-btn:hover { box-shadow: 0 0 30px rgba(0,240,255,0.3); }
+    .calc-btn:active { transform: scale(0.97); }
+
+    /* ── RESULTS ── */
+    .result-panel {
+      margin-top: 1.75rem;
+      background: var(--zinc2);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px; padding: 1.5rem;
+      display: none;
+    }
+    .result-panel.visible { display: block; }
+    .result-panel.rise  { border-color: rgba(0,230,118,0.3); }
+    .result-panel.fall  { border-color: rgba(255,82,82,0.3);  }
+    .result-panel.warn  { border-color: rgba(255,215,64,0.3); }
+
+    .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .result-item { display: flex; flex-direction: column; gap: 0.3rem; }
+    .result-label { font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+    .result-value { font-family: 'Clash Display', sans-serif; font-size: 1.5rem; font-weight: 700; }
+    .result-value.cyan    { color: var(--cyan); }
+    .result-value.green   { color: #00e676; }
+    .result-value.red     { color: #ff5252; }
+    .result-value.yellow  { color: #ffd740; }
+    .result-value.white   { color: #fff; }
+
+    .result-sub { font-size: 0.65rem; color: rgba(255,255,255,0.35); margin-top: 0.5rem; }
+
+    .result-formula {
+      margin-top: 1rem;
+      background: rgba(0,240,255,0.04);
+      border: 1px solid rgba(0,240,255,0.1);
+      border-radius: 3px; padding: 0.75rem 1rem;
+      font-size: 0.68rem; color: rgba(0,240,255,0.6);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .verdict-box {
+      padding: 1rem 1.25rem; border-radius: 3px; margin-bottom: 1rem;
+      font-family: 'Clash Display', sans-serif; font-size: 1.1rem; font-weight: 600;
+    }
+    .verdict-box.good { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.25); color: #00e676; }
+    .verdict-box.bad  { background: rgba(255,82,82,0.08);  border: 1px solid rgba(255,82,82,0.25);  color: #ff5252; }
+    .verdict-box.meh  { background: rgba(255,215,64,0.08); border: 1px solid rgba(255,215,64,0.25); color: #ffd740; }
+
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    @media (max-width: 600px) { .pros-cons { grid-template-columns: 1fr; } }
+    .pros-cons-box { background: rgba(255,255,255,0.02); border-radius: 3px; padding: 0.85rem; }
+    .pros-cons-title { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .pros-cons-title.green { color: #00e676; }
+    .pros-cons-title.red   { color: #ff5252; }
+    .pros-cons-item { font-size: 0.7rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+    .table-result { width: 100%; border-collapse: collapse; font-size: 0.72rem; margin-top: 0.75rem; }
+    .table-result th { color: rgba(255,255,255,0.3); font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.07); text-align: left; }
+    .table-result td { padding: 0.65rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+    .table-result tr:last-child td { border-bottom: none; }
+    .table-result tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .star-rating { color: var(--cyan); letter-spacing: 0.1em; }
+
+    /* ── LOCK OVERLAY ── */
+    .lock-wrapper { position: relative; }
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(24,24,27,0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: 1rem; padding: 2.5rem;
+      z-index: 10;
+    }
+    .lock-icon { font-size: 2rem; opacity: 0.6; }
+    .lock-title { font-family: 'Clash Display', sans-serif; font-size: 1.4rem; font-weight: 700; }
+    .lock-desc { font-size: 0.72rem; color: rgba(255,255,255,0.45); max-width: 340px; line-height: 1.7; }
+    .lock-price { font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.1em; }
+    .lock-cta {
+      background: var(--cyan); color: #000;
+      font-family: 'Clash Display', sans-serif; font-weight: 700;
+      font-size: 0.85rem; padding: 0.85rem 2rem; border-radius: 3px;
+      text-decoration: none; transition: box-shadow 0.2s, transform 0.1s;
+    }
+    .lock-cta:hover { box-shadow: 0 0 30px rgba(0,240,255,0.35); }
+    .lock-cta:active { transform: scale(0.97); }
+    .lock-cta.edge { background: #4db3ff; }
+    .lock-cta.lab  { background: var(--magenta); color: #fff; }
+
+    .lock-overlay.hidden { display: none; }
+
+    /* ── BYE TABLE ── */
+    .bye-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1rem; }
+    @media (max-width: 600px) { .bye-grid { grid-template-columns: 1fr; } }
+    .bye-card { background: var(--zinc3); border-radius: 3px; padding: 0.85rem; }
+    .bye-round-label { font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 0.4rem; }
+    .bye-round-num { font-family: 'Clash Display', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--cyan); margin-bottom: 0.5rem; }
+    .bye-count { font-size: 0.62rem; color: rgba(255,255,255,0.35); }
+    .bye-count.danger { color: #ff5252; }
+    .bye-player { font-size: 0.68rem; color: rgba(255,255,255,0.6); padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .bye-player:last-child { border-bottom: none; }
+
+    /* ── OPTIMIZER LINEUP ── */
+    .lineup-card {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 3px; padding: 0.7rem 1rem; margin-bottom: 0.35rem;
+      font-size: 0.72rem;
+    }
+    .lineup-pos { color: var(--cyan); font-size: 0.6rem; letter-spacing: 0.1em; min-width: 50px; }
+    .lineup-name { font-weight: 700; flex: 1; margin: 0 0.75rem; }
+    .lineup-salary { color: rgba(255,255,255,0.4); }
+    .lineup-pts { color: #00e676; font-weight: 700; min-width: 50px; text-align: right; }
+
+    /* ── MATCHUP STARS ── */
+    .matchup-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .matchup-row:last-child { border-bottom: none; }
+    .matchup-team { font-size: 0.75rem; color: #fff; }
+    .matchup-stars { font-size: 0.85rem; }
+    .matchup-avg { font-size: 0.65rem; color: rgba(255,255,255,0.4); }
+    .matchup-label { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .matchup-label.elite  { color: #00e676; }
+    .matchup-label.great  { color: #69f0ae; }
+    .matchup-label.neutral{ color: #ffd740; }
+    .matchup-label.tough  { color: #ff9100; }
+    .matchup-label.avoid  { color: #ff5252; }
+
+    /* ── SQUAD TABLE ── */
+    .squad-position-block { margin-bottom: 1.25rem; }
+    .squad-pos-header {
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--cyan); border-bottom: 1px solid rgba(0,240,255,0.15);
+      padding-bottom: 0.35rem; margin-bottom: 0.5rem;
+    }
+    .squad-player { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .squad-player:last-child { border-bottom: none; }
+    .squad-player-name { font-size: 0.75rem; }
+    .squad-player-meta { font-size: 0.65rem; color: rgba(255,255,255,0.35); }
+    .squad-player-price { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+
+    /* ── DIVIDER ── */
+    .section-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 1.5rem 0; }
+
+    /* ── MULTI-ROUND TABLE ── */
+    .direction-up   { color: #00e676; }
+    .direction-down { color: #ff5252; }
+    .direction-hold { color: #ffd740; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 3rem; color: rgba(255,255,255,0.2); font-size: 0.75rem; }
+
+    /* ── GLOW ACCENTS ── */
+    .glow-accent {
+      position: fixed; pointer-events: none; z-index: 0; border-radius: 50%;
+    }
+    .glow-a { top: 20%; right: 10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,240,255,0.05) 0%, transparent 70%); }
+    .glow-b { bottom: 20%; left: 5%;  width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,0,60,0.04) 0%, transparent 70%); }
+  </style>
+</head>
+<body>
+
+<!-- Noise -->
+<svg id="noise" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <filter id="fn"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#fn)" opacity="1"/>
+</svg>
+
+<!-- Glows -->
+<div class="glow-accent glow-a"></div>
+<div class="glow-accent glow-b"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="nav-logo">Such Is <span>Fantasy</span></a>
+  <div style="display:flex;align-items:center;gap:2rem">
+    <a href="index.html" style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Home</a>
+    <a href="https://whop.com/suchisfantasy" target="_blank" style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Community</a>
+    <a href="https://whop.com/suchisfantasy" target="_blank" class="nav-cta">Join Fantasy Lab →</a>
+  </div>
+</nav>
+
+<!-- Header -->
+<div class="page-header">
+  <p class="eyebrow">NRL Fantasy · SuperCoach · Draftstars</p>
+  <h1 class="page-title clash">Fantasy<br><span>Tools</span></h1>
+  <p class="page-sub">All the calculators you need to win — break-even, price change, trade analysis, bye planning, lineup optimisation, matchup ratings, and squad builder.</p>
+</div>
+
+<!-- Access Banner -->
+<div id="access-banner">
+  <p>🔒 Some tools require a <strong>Fantasy Lab</strong> membership. Already a member? Enter your access code below to unlock all tools.</p>
+  <div class="unlock-form">
+    <input type="text" id="code-input" placeholder="Enter access code" autocomplete="off" spellcheck="false">
+    <button id="unlock-btn" onclick="tryUnlock()">Unlock</button>
+  </div>
+  <span id="code-status"></span>
+</div>
+
+<!-- Layout -->
+<div class="tools-layout">
+
+  <!-- Sidebar -->
+  <div class="tool-sidebar">
+    <div class="sidebar-label">Free Tools</div>
+    <button class="tool-nav-btn active" onclick="showTool('breakeven', this)">
+      🎯 Break-Even
+      <span class="tool-badge badge-free">Free</span>
+    </button>
+    <button class="tool-nav-btn" onclick="showTool('pricechange', this)">
+      📈 Price Change
+      <span class="tool-badge badge-free">Free</span>
+    </button>
+
+    <div class="sidebar-label" style="margin-top:0.75rem">Fantasy Edge</div>
+    <button class="tool-nav-btn" onclick="showTool('trade', this)">
+      🔄 Trade Calc
+      <span class="tool-badge badge-edge">Edge</span>
+    </button>
+    <button class="tool-nav-btn" onclick="showTool('byeplanner', this)">
+      📅 Bye Planner
+      <span class="tool-badge badge-edge">Edge</span>
+    </button>
+
+    <div class="sidebar-label" style="margin-top:0.75rem">Fantasy Lab</div>
+    <button class="tool-nav-btn" onclick="showTool('optimizer', this)">
+      ⚡ DS Optimizer
+      <span class="tool-badge badge-lab" id="badge-optimizer">Lab</span>
+    </button>
+    <button class="tool-nav-btn" onclick="showTool('matchup', this)">
+      🏆 Matchup
+      <span class="tool-badge badge-lab" id="badge-matchup">Lab</span>
+    </button>
+    <button class="tool-nav-btn" onclick="showTool('squad', this)">
+      🏉 Squad Builder
+      <span class="tool-badge badge-lab" id="badge-squad">Lab</span>
+    </button>
+  </div>
+
+  <!-- Main -->
+  <div class="tool-main">
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 1: BREAK-EVEN (FREE)              -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-breakeven" class="tool-panel active">
+      <h2 class="tool-title clash">Break-Even Calculator</h2>
+      <p class="tool-desc">The score a player must hit this round so their 3-game rolling average doesn't fall below their base average — keeping their price stable or rising. Formula: <code>BE = ceil(3 × base_avg − score_r2 − score_r1)</code></p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Game</label>
+          <select class="form-select" id="be-game" onchange="calcBreakeven()">
+            <option value="nrl">NRL Fantasy</option>
+            <option value="supercoach">SuperCoach</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Player Name <span style="color:rgba(255,255,255,0.2)">(optional)</span></label>
+          <input type="text" class="form-input" id="be-name" placeholder="e.g. Harry Grant" oninput="calcBreakeven()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Starting Price ($)</label>
+          <input type="number" class="form-input" id="be-start-price" placeholder="e.g. 738000" oninput="calcBreakeven()">
+          <span class="form-hint">Used to derive base avg if not provided</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Base Avg <span style="color:rgba(255,255,255,0.2)">(override)</span></label>
+          <input type="number" class="form-input" id="be-base-avg" placeholder="e.g. 69" oninput="calcBreakeven()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Score — 2 Rounds Ago</label>
+          <input type="number" class="form-input" id="be-score-prev" placeholder="e.g. 77" oninput="calcBreakeven()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Score — Last Round</label>
+          <input type="number" class="form-input" id="be-score-last" placeholder="e.g. 64" oninput="calcBreakeven()">
+        </div>
+      </div>
+
+      <div id="be-result" class="result-panel">
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="result-label">Break-Even</span>
+            <span class="result-value cyan" id="be-val">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Base Average</span>
+            <span class="result-value white" id="be-avg-val">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Price Direction</span>
+            <span class="result-value" id="be-dir">—</span>
+          </div>
+        </div>
+        <div id="be-formula" class="result-formula" style="margin-top:1rem">—</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 2: PRICE CHANGE (FREE)            -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-pricechange" class="tool-panel">
+      <h2 class="tool-title clash">Price Change Predictor</h2>
+      <p class="tool-desc">Predict exactly how much a player's price will move after a projected score. Supports single-round and up to 5-round forecasting.</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Player Name <span style="color:rgba(255,255,255,0.2)">(optional)</span></label>
+          <input type="text" class="form-input" id="pc-name" placeholder="e.g. Nicho Hynes">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Price ($)</label>
+          <input type="number" class="form-input" id="pc-price" placeholder="e.g. 724000" oninput="calcPriceChange()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Base Avg <span style="color:rgba(255,255,255,0.2)">(or auto)</span></label>
+          <input type="number" class="form-input" id="pc-base-avg" placeholder="auto from price" oninput="calcPriceChange()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Score — 2 Rounds Ago</label>
+          <input type="number" class="form-input" id="pc-score-prev" placeholder="e.g. 82" oninput="calcPriceChange()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Score — Last Round</label>
+          <input type="number" class="form-input" id="pc-score-last" placeholder="e.g. 74" oninput="calcPriceChange()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Projected Score This Round</label>
+          <input type="number" class="form-input" id="pc-projected" placeholder="e.g. 65" oninput="calcPriceChange()">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label">Multi-Round Forecast <span style="color:rgba(255,255,255,0.2)">(optional — comma-separated future scores)</span></label>
+        <input type="text" class="form-input" id="pc-multi" placeholder="e.g. 60, 55, 70, 65, 58" oninput="calcPriceChange()">
+      </div>
+
+      <div id="pc-result" class="result-panel">
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="result-label">Price Change</span>
+            <span class="result-value" id="pc-change-val">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">New Price</span>
+            <span class="result-value cyan" id="pc-new-price">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Break-Even</span>
+            <span class="result-value white" id="pc-be">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">New 3-Game Avg</span>
+            <span class="result-value white" id="pc-new-avg">—</span>
+          </div>
+        </div>
+        <div id="pc-multi-result" style="margin-top:1.25rem"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 3: TRADE CALC (EDGE)              -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-trade" class="tool-panel">
+      <h2 class="tool-title clash">Trade Calculator</h2>
+      <p class="tool-desc">Model the full value of a trade — bank impact, points gained over remaining rounds, price trends, and a definitive verdict.</p>
+
+      <div class="lock-wrapper">
+        <div id="lock-trade" class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-title clash">Fantasy Edge Required</div>
+          <div class="lock-desc">The Trade Calculator is available to Fantasy Edge and Fantasy Lab members.</div>
+          <div class="lock-price">From $19.99 AUD / month</div>
+          <a href="https://whop.com/suchisfantasy" target="_blank" class="lock-cta edge">Unlock with Fantasy Edge →</a>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Selling — Player Name</label>
+            <input type="text" class="form-input" id="tr-sell-name" placeholder="e.g. Reece Walsh" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sell Price ($)</label>
+            <input type="number" class="form-input" id="tr-sell-price" placeholder="e.g. 812000" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sell — 3-Game Avg</label>
+            <input type="number" class="form-input" id="tr-sell-avg" placeholder="e.g. 75" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sell — Break-Even</label>
+            <input type="number" class="form-input" id="tr-sell-be" placeholder="e.g. 70" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sell — Price Trend</label>
+            <select class="form-select" id="tr-sell-trend" onchange="calcTrade()">
+              <option value="rising">📈 Rising</option>
+              <option value="steady" selected>➡️ Steady</option>
+              <option value="falling">📉 Falling</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sell — Projected Avg (rest of season)</label>
+            <input type="number" class="form-input" id="tr-sell-proj" placeholder="same as avg if unsure" oninput="calcTrade()">
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Buying — Player Name</label>
+            <input type="text" class="form-input" id="tr-buy-name" placeholder="e.g. Harry Grant" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Buy Price ($)</label>
+            <input type="number" class="form-input" id="tr-buy-price" placeholder="e.g. 738000" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Buy — 3-Game Avg</label>
+            <input type="number" class="form-input" id="tr-buy-avg" placeholder="e.g. 69" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Buy — Break-Even</label>
+            <input type="number" class="form-input" id="tr-buy-be" placeholder="e.g. 65" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Buy — Price Trend</label>
+            <select class="form-select" id="tr-buy-trend" onchange="calcTrade()">
+              <option value="rising">📈 Rising</option>
+              <option value="steady" selected>➡️ Steady</option>
+              <option value="falling">📉 Falling</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Buy — Projected Avg (rest of season)</label>
+            <input type="number" class="form-input" id="tr-buy-proj" placeholder="same as avg if unsure" oninput="calcTrade()">
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:0.5rem">
+          <div class="form-group">
+            <label class="form-label">Current Bank ($)</label>
+            <input type="number" class="form-input" id="tr-bank" placeholder="e.g. 120000" oninput="calcTrade()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rounds Remaining</label>
+            <input type="number" class="form-input" id="tr-rounds" placeholder="e.g. 10" value="10" oninput="calcTrade()">
+          </div>
+        </div>
+
+        <div id="tr-result" class="result-panel" style="margin-top:1.5rem">
+          <div id="tr-verdict" class="verdict-box meh">—</div>
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="result-label">Bank After</span>
+              <span class="result-value" id="tr-bank-after">—</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Pts/Round</span>
+              <span class="result-value" id="tr-pts-round">—</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Total Pts Gain</span>
+              <span class="result-value" id="tr-pts-total">—</span>
+            </div>
+          </div>
+          <div class="pros-cons" id="tr-pros-cons"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 4: BYE PLANNER (EDGE)             -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-byeplanner" class="tool-panel">
+      <h2 class="tool-title clash">Bye Round Planner</h2>
+      <p class="tool-desc">Enter your squad and see exactly which rounds you'll be short on players. 2025 bye schedule: Rounds 9, 10, 11. Identifies high-risk rounds and gives trading recommendations.</p>
+
+      <div class="lock-wrapper">
+        <div id="lock-byeplanner" class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-title clash">Fantasy Edge Required</div>
+          <div class="lock-desc">The Bye Planner is available to Fantasy Edge and Fantasy Lab members.</div>
+          <div class="lock-price">From $19.99 AUD / month</div>
+          <a href="https://whop.com/suchisfantasy" target="_blank" class="lock-cta edge">Unlock with Fantasy Edge →</a>
+        </div>
+
+        <div style="margin-bottom:1rem">
+          <label class="form-label" style="display:block;margin-bottom:0.5rem">Enter Your Squad</label>
+          <p class="form-hint" style="margin-bottom:0.75rem;font-size:0.67rem;color:rgba(255,255,255,0.3)">One player per line: Name, Team, Position (e.g. "Harry Grant, Storm, HOK")</p>
+          <textarea class="form-input" id="bye-squad" rows="12" style="width:100%;resize:vertical;line-height:1.7" placeholder="Harry Grant, Storm, HOK
+Reece Walsh, Broncos, FB
+Nicho Hynes, Sharks, HFB
+Isaah Yeo, Panthers, MID
+Cameron Murray, Rabbitohs, MID
+Joseph Suaalii, Roosters, CTW
+Kotoni Staggs, Broncos, CTW
+James Fisher-Harris, Panthers, FRF
+Reed Mahoney, Bulldogs, HOK"></textarea>
+        </div>
+        <button class="calc-btn" onclick="calcByePlanner()">Analyse Byes</button>
+
+        <div id="bye-result" class="result-panel" style="margin-top:1.5rem">
+          <div id="bye-summary"></div>
+          <div id="bye-grid-output" class="bye-grid"></div>
+          <div id="bye-recs" style="margin-top:1.25rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 5: DRAFTSTARS OPTIMIZER (LAB)     -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-optimizer" class="tool-panel">
+      <h2 class="tool-title clash">Draftstars Lineup Optimizer</h2>
+      <p class="tool-desc">Generate the highest projected-points lineup within the $50,000 Draftstars NRL salary cap. Enter your player pool below or use the sample data to test.</p>
+
+      <div class="lock-wrapper">
+        <div id="lock-optimizer" class="lock-overlay">
+          <div class="lock-icon">⚡</div>
+          <div class="lock-title clash">Fantasy Lab Required</div>
+          <div class="lock-desc">The Draftstars Optimizer is exclusive to Fantasy Lab members.</div>
+          <div class="lock-price">$49.99 AUD / month · Annual available</div>
+          <a href="https://whop.com/suchisfantasy" target="_blank" class="lock-cta lab">Unlock Fantasy Lab →</a>
+        </div>
+
+        <div style="margin-bottom:1rem">
+          <label class="form-label" style="display:block;margin-bottom:0.5rem">Player Pool</label>
+          <p class="form-hint" style="margin-bottom:0.75rem;font-size:0.67rem;color:rgba(255,255,255,0.3)">One per line: Name, Position, Salary, ProjectedPts (e.g. "Harry Grant, HOK, 9900, 69")</p>
+          <textarea class="form-input" id="opt-players" rows="14" style="width:100%;resize:vertical;line-height:1.7" placeholder="Reece Walsh, FB, 10800, 75
+Harry Grant, HOK, 9900, 69
+Nicho Hynes, HB, 9800, 67
+Mitch Moses, HB, 8800, 60
+Isaah Yeo, 2RF, 9200, 62
+Cameron Murray, 2RF, 9000, 61
+Kotoni Staggs, CTR, 6500, 45
+Joseph Suaalii, CTR, 6900, 47
+Bradman Best, CTR, 5800, 40
+Taylan May, WG, 5100, 35
+Stefano Utoikamanu, PROP, 6200, 43
+James Fisher-Harris, PROP, 8100, 55
+Tom Flegler, PROP, 5700, 40
+Angus Crichton, 2RF, 7400, 51
+Reed Mahoney, HOK, 8200, 56"></textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Lock Players <span style="color:rgba(255,255,255,0.2)">(comma-separated)</span></label>
+            <input type="text" class="form-input" id="opt-lock" placeholder="e.g. Reece Walsh, Harry Grant">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Exclude Players <span style="color:rgba(255,255,255,0.2)">(comma-separated)</span></label>
+            <input type="text" class="form-input" id="opt-exclude" placeholder="e.g. Nicho Hynes">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Players Per Team</label>
+            <input type="number" class="form-input" id="opt-max-team" value="4" min="1" max="9">
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcOptimizer()" style="margin-top:0.5rem">Optimise Lineup</button>
+
+        <div id="opt-result" class="result-panel" style="margin-top:1.5rem">
+          <div class="result-grid" style="margin-bottom:1.25rem">
+            <div class="result-item">
+              <span class="result-label">Projected Points</span>
+              <span class="result-value green" id="opt-pts">—</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Salary Used</span>
+              <span class="result-value cyan" id="opt-salary">—</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Cap Remaining</span>
+              <span class="result-value white" id="opt-remaining">—</span>
+            </div>
+          </div>
+          <div id="opt-lineup"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 6: MATCHUP ANALYSIS (LAB)         -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-matchup" class="tool-panel">
+      <h2 class="tool-title clash">Matchup Analysis</h2>
+      <p class="tool-desc">Find the best and worst defensive matchups for each position this round. Star ratings based on average fantasy points conceded by the opponent to that position.</p>
+
+      <div class="lock-wrapper">
+        <div id="lock-matchup" class="lock-overlay">
+          <div class="lock-icon">🏆</div>
+          <div class="lock-title clash">Fantasy Lab Required</div>
+          <div class="lock-desc">Matchup analysis is exclusive to Fantasy Lab members.</div>
+          <div class="lock-price">$49.99 AUD / month · Annual available</div>
+          <a href="https://whop.com/suchisfantasy" target="_blank" class="lock-cta lab">Unlock Fantasy Lab →</a>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Position</label>
+            <select class="form-select" id="mu-position" onchange="calcMatchup()">
+              <option value="HOK">HOK — Hooker</option>
+              <option value="HFB">HFB — Halfback / Five-Eighth</option>
+              <option value="FB">FB — Fullback</option>
+              <option value="CTW">CTW — Centre / Wing</option>
+              <option value="FRF">FRF — Front Row</option>
+              <option value="MID">MID — Back Row / Lock</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">View</label>
+            <select class="form-select" id="mu-view" onchange="calcMatchup()">
+              <option value="best">Best Matchups</option>
+              <option value="all">All Teams Ranked</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="mu-result" class="result-panel visible" style="margin-top:1rem">
+          <div id="mu-list"></div>
+          <p style="font-size:0.62rem;color:rgba(255,255,255,0.2);margin-top:1rem">⚠️ Matchup data is updated weekly. Enter your access code above to unlock live data.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- TOOL 7: SQUAD BUILDER (LAB)            -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="tool-squad" class="tool-panel">
+      <h2 class="tool-title clash">Squad Builder</h2>
+      <p class="tool-desc">Build the optimal 17-player NRL Fantasy squad or 18-player SuperCoach squad within the salary cap, meeting all positional requirements.</p>
+
+      <div class="lock-wrapper">
+        <div id="lock-squad" class="lock-overlay">
+          <div class="lock-icon">🏉</div>
+          <div class="lock-title clash">Fantasy Lab Required</div>
+          <div class="lock-desc">The Squad Builder is exclusive to Fantasy Lab members.</div>
+          <div class="lock-price">$49.99 AUD / month · Annual available</div>
+          <a href="https://whop.com/suchisfantasy" target="_blank" class="lock-cta lab">Unlock Fantasy Lab →</a>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Game</label>
+            <select class="form-select" id="sq-game">
+              <option value="nrl">NRL Fantasy ($6M cap)</option>
+              <option value="supercoach">SuperCoach ($6.5M cap)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Must Include <span style="color:rgba(255,255,255,0.2)">(comma-separated)</span></label>
+            <input type="text" class="form-input" id="sq-must" placeholder="e.g. Harry Grant, Reece Walsh">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Exclude <span style="color:rgba(255,255,255,0.2)">(comma-separated)</span></label>
+            <input type="text" class="form-input" id="sq-exclude" placeholder="e.g. Nicho Hynes">
+          </div>
+        </div>
+
+        <div style="margin-bottom:1rem">
+          <label class="form-label" style="display:block;margin-bottom:0.5rem">Player Pool</label>
+          <p class="form-hint" style="margin-bottom:0.75rem;font-size:0.67rem;color:rgba(255,255,255,0.3)">One per line: Name, Position, Price, ProjectedAvg (e.g. "Harry Grant, HOK, 738000, 69")</p>
+          <textarea class="form-input" id="sq-players" rows="14" style="width:100%;resize:vertical;line-height:1.7" placeholder="Reece Walsh, FB, 812000, 75
+Harry Grant, HOK, 738000, 69
+Nicho Hynes, HFB, 724000, 67
+Mitch Moses, HFB, 655000, 60
+Isaah Yeo, MID, 682000, 62
+Cameron Murray, MID, 668000, 61
+Angus Crichton, MID, 554000, 51
+Kotoni Staggs, CTW, 486000, 45
+Joseph Suaalii, CTW, 512000, 47
+Bradman Best, CTW, 442000, 40
+Jeremiah Nanai, CTW, 474000, 43
+Taylan May, CTW, 388000, 35
+James Fisher-Harris, FRF, 598000, 55
+Stefano Utoikamanu, FRF, 468000, 43
+Tom Flegler, FRF, 436000, 40
+Reed Mahoney, HOK, 612000, 56
+Tyran Wishart, FB, 398000, 36"></textarea>
+        </div>
+
+        <button class="calc-btn" onclick="calcSquad()">Build Optimal Squad</button>
+
+        <div id="sq-result" class="result-panel" style="margin-top:1.5rem">
+          <div class="result-grid" style="margin-bottom:1.5rem">
+            <div class="result-item">
+              <span class="result-label">Total Price</span>
+              <span class="result-value cyan" id="sq-total">—</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Bank Remaining</span>
+              <span class="result-value green" id="sq-bank">—</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Avg Projected</span>
+              <span class="result-value white" id="sq-avg">—</span>
+            </div>
+          </div>
+          <div id="sq-positions"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tool-main -->
+</div><!-- /tools-layout -->
+
+<!-- Footer -->
+<footer style="padding:2rem 6vw;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+  <a href="index.html" style="font-family:'Clash Display',sans-serif;font-size:0.9rem;font-weight:700;color:#fff;text-decoration:none">Such Is <span style="color:var(--cyan)">Fantasy</span></a>
+  <div style="display:flex;gap:1.5rem">
+    <a href="index.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-decoration:none">Home</a>
+    <a href="tools.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-decoration:none">Tools</a>
+    <a href="https://whop.com/suchisfantasy" target="_blank" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-decoration:none">Community</a>
+  </div>
+  <a href="https://whop.com/suchisfantasy" target="_blank" style="font-size:0.65rem;color:var(--cyan);text-decoration:none;letter-spacing:0.1em">whop.com/suchisfantasy →</a>
+</footer>
+
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ACCESS CONTROL
+// ═══════════════════════════════════════════════════════
+
+// Access codes: edge = Fantasy Edge access, lab = full access
+// Change these in your Whop channel each month
+const ACCESS_CODES = {
+  'EDGE-2025': 'edge',
+  'LAB-2025':  'lab',
+};
+
+let memberTier = localStorage.getItem('sif_tier') || 'free';
+applyAccess(memberTier);
+
+function tryUnlock() {
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const tier = ACCESS_CODES[code];
+  const status = document.getElementById('code-status');
+
+  if (tier) {
+    memberTier = tier;
+    localStorage.setItem('sif_tier', tier);
+    status.textContent = tier === 'lab' ? '✅ Fantasy Lab unlocked' : '✅ Fantasy Edge unlocked';
+    status.style.color = '#00e676';
+    applyAccess(tier);
+  } else {
+    status.textContent = '❌ Invalid code';
+    status.style.color = '#ff5252';
+  }
+}
+
+function applyAccess(tier) {
+  const edgeLocks = ['lock-trade', 'lock-byeplanner'];
+  const labLocks  = ['lock-optimizer', 'lock-matchup', 'lock-squad'];
+
+  if (tier === 'edge' || tier === 'lab') {
+    edgeLocks.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+  }
+  if (tier === 'lab') {
+    labLocks.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    document.getElementById('access-banner').classList.add('unlocked');
+    document.getElementById('access-banner').querySelector('p').innerHTML =
+      '🔓 <strong>Fantasy Lab unlocked.</strong> All tools are now accessible.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+function showTool(name, btn) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tool-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tool-' + name)?.classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+
+const fp = n => {
+  const abs = Math.abs(Math.round(n));
+  const sign = n < 0 ? '-' : '';
+  return sign + '$' + abs.toLocaleString('en-AU');
+};
+
+function baseAvgFromPrice(price, game = 'nrl') {
+  const factor = game === 'supercoach' ? 5800 : 5500;
+  return Math.round(price / factor);
+}
+
+function calcBreakEvenCore(baseAvg, scores) {
+  const s = scores.slice(-2);
+  let raw;
+  if (s.length === 0) raw = baseAvg;
+  else if (s.length === 1) raw = 3 * baseAvg - s[0];
+  else raw = 3 * baseAvg - s[0] - s[1];
+  return Math.ceil(raw);
+}
+
+// ═══════════════════════════════════════════════════════
+// TOOL 1: BREAK-EVEN
+// ═══════════════════════════════════════════════════════
+
+function calcBreakeven() {
+  const game      = document.getElementById('be-game').value;
+  const startPrice = parseFloat(document.getElementById('be-start-price').value);
+  const baseAvgInput = parseFloat(document.getElementById('be-base-avg').value);
+  const scorePrev = parseFloat(document.getElementById('be-score-prev').value);
+  const scoreLast = parseFloat(document.getElementById('be-score-last').value);
+
+  let baseAvg = isNaN(baseAvgInput) ? (isNaN(startPrice) ? null : baseAvgFromPrice(startPrice, game)) : baseAvgInput;
+  if (!baseAvg) return;
+
+  const scores = [];
+  if (!isNaN(scorePrev)) scores.push(scorePrev);
+  if (!isNaN(scoreLast)) scores.push(scoreLast);
+
+  const be = calcBreakEvenCore(baseAvg, scores);
+  const last = scores[scores.length - 1];
+  let dir = '➡️ Hold'; let dirColor = 'yellow';
+  if (!isNaN(last)) {
+    if (last > be) { dir = '📈 Rising'; dirColor = 'green'; }
+    else if (last < be) { dir = '📉 Falling'; dirColor = 'red'; }
+  }
+
+  let formula;
+  if (scores.length === 2) formula = `ceil(3 × ${baseAvg} − ${scores[0]} − ${scores[1]}) = ${be}`;
+  else if (scores.length === 1) formula = `ceil(3 × ${baseAvg} − ${scores[0]}) = ${be}`;
+  else formula = `Base avg = ${baseAvg} (no scores entered)`;
+
+  document.getElementById('be-val').textContent = be + ' pts';
+  document.getElementById('be-avg-val').textContent = baseAvg + ' pts';
+  document.getElementById('be-dir').textContent = dir;
+  document.getElementById('be-dir').className = 'result-value ' + dirColor;
+  document.getElementById('be-formula').textContent = formula;
+
+  const panel = document.getElementById('be-result');
+  panel.classList.add('visible');
+  panel.className = 'result-panel visible ' + (dirColor === 'green' ? 'rise' : dirColor === 'red' ? 'fall' : '');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOOL 2: PRICE CHANGE
+// ═══════════════════════════════════════════════════════
+
+function calcPriceChange() {
+  const price      = parseFloat(document.getElementById('pc-price').value);
+  const baseAvgIn  = parseFloat(document.getElementById('pc-base-avg').value);
+  const scorePrev  = parseFloat(document.getElementById('pc-score-prev').value);
+  const scoreLast  = parseFloat(document.getElementById('pc-score-last').value);
+  const projected  = parseFloat(document.getElementById('pc-projected').value);
+  const multiRaw   = document.getElementById('pc-multi').value.trim();
+
+  if (isNaN(price) || isNaN(projected)) return;
+
+  const baseAvg = isNaN(baseAvgIn) ? baseAvgFromPrice(price, 'nrl') : baseAvgIn;
+  const scores = [];
+  if (!isNaN(scorePrev)) scores.push(scorePrev);
+  if (!isNaN(scoreLast)) scores.push(scoreLast);
+
+  const be = calcBreakEvenCore(baseAvg, scores);
+  const ppp = price / (3 * baseAvg);
+  const rawChange = (projected - be) * ppp;
+  const change = Math.round(rawChange / 1000) * 1000;
+  const newPrice = price + change;
+
+  const window3 = [...scores, projected];
+  const newAvg = Math.round(window3.reduce((a,b)=>a+b,0) / window3.length);
+
+  const changeEl = document.getElementById('pc-change-val');
+  changeEl.textContent = (change >= 0 ? '+' : '') + fp(change);
+  changeEl.className = 'result-value ' + (change > 0 ? 'green' : change < 0 ? 'red' : 'yellow');
+  document.getElementById('pc-new-price').textContent = fp(newPrice);
+  document.getElementById('pc-be').textContent = be + ' pts';
+  document.getElementById('pc-new-avg').textContent = newAvg + ' pts';
+
+  // Multi-round forecast
+  const multiEl = document.getElementById('pc-multi-result');
+  if (multiRaw) {
+    const futureScores = multiRaw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (futureScores.length > 0) {
+      let curPrice = newPrice;
+      let curScores = [...scores, projected].slice(-2);
+      let rows = '';
+      futureScores.forEach((sc, i) => {
+        const be2 = calcBreakEvenCore(baseAvg, curScores);
+        const ppp2 = curPrice / (3 * baseAvg);
+        const ch = Math.round(((sc - be2) * ppp2) / 1000) * 1000;
+        const nextPrice = curPrice + ch;
+        const dirIcon = ch > 0 ? '📈' : ch < 0 ? '📉' : '➡️';
+        const dirClass = ch > 0 ? 'direction-up' : ch < 0 ? 'direction-down' : 'direction-hold';
+        rows += `<tr>
+          <td>Round +${i+1}</td>
+          <td>${sc} pts</td>
+          <td>BE: ${be2}</td>
+          <td class="${dirClass}">${dirIcon} ${ch >= 0 ? '+' : ''}${fp(ch)}</td>
+          <td><strong>${fp(nextPrice)}</strong></td>
+        </tr>`;
+        curScores = [...curScores, sc].slice(-2);
+        curPrice = nextPrice;
+      });
+      multiEl.innerHTML = `<p style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.5rem">Multi-Round Forecast</p>
+        <table class="table-result"><thead><tr><th>Round</th><th>Score</th><th>Break-Even</th><th>Change</th><th>New Price</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+  } else {
+    multiEl.innerHTML = '';
+  }
+
+  document.getElementById('pc-result').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOOL 3: TRADE CALC
+// ═══════════════════════════════════════════════════════
+
+function calcTrade() {
+  const sellName  = document.getElementById('tr-sell-name').value || 'Sell';
+  const sellPrice = parseFloat(document.getElementById('tr-sell-price').value);
+  const sellAvg   = parseFloat(document.getElementById('tr-sell-avg').value);
+  const sellBe    = parseFloat(document.getElementById('tr-sell-be').value);
+  const sellTrend = document.getElementById('tr-sell-trend').value;
+  const sellProj  = parseFloat(document.getElementById('tr-sell-proj').value) || sellAvg;
+  const buyName   = document.getElementById('tr-buy-name').value || 'Buy';
+  const buyPrice  = parseFloat(document.getElementById('tr-buy-price').value);
+  const buyAvg    = parseFloat(document.getElementById('tr-buy-avg').value);
+  const buyBe     = parseFloat(document.getElementById('tr-buy-be').value);
+  const buyTrend  = document.getElementById('tr-buy-trend').value;
+  const buyProj   = parseFloat(document.getElementById('tr-buy-proj').value) || buyAvg;
+  const bank      = parseFloat(document.getElementById('tr-bank').value) || 0;
+  const rounds    = parseFloat(document.getElementById('tr-rounds').value) || 10;
+
+  if (isNaN(sellPrice) || isNaN(buyPrice) || isNaN(sellAvg) || isNaN(buyAvg)) return;
+
+  const bankAfter = bank + sellPrice - buyPrice;
+  const canAfford = bankAfter >= 0;
+  const ptsPerRound = (isNaN(buyProj) ? buyAvg : buyProj) - (isNaN(sellProj) ? sellAvg : sellProj);
+  const totalPts = Math.round(ptsPerRound * rounds);
+
+  const trendScore = { rising: 1, steady: 0, falling: -1 };
+  const issues = [], positives = [];
+  if (!canAfford) issues.push('Can\'t afford — ' + fp(Math.abs(bankAfter)) + ' short');
+  if (ptsPerRound < 0) issues.push('Losing ~' + Math.abs(Math.round(ptsPerRound)) + ' pts/round');
+  if (sellTrend === 'rising') issues.push('Selling a rising asset early');
+  if (buyTrend === 'falling') issues.push('Buying a falling player');
+  if (ptsPerRound > 5) positives.push('Gain ~' + Math.round(ptsPerRound) + ' pts/round');
+  if (buyTrend === 'rising') positives.push('Buying into a price rise');
+  if (sellTrend === 'falling') positives.push('Selling before further drops');
+  if (!isNaN(sellBe) && !isNaN(buyBe) && (sellBe - buyBe) > 10) positives.push(buyName + '\'s BE is ' + (sellBe - buyBe) + ' pts easier to hit');
+  if (bankAfter > 50000) positives.push('Bank improves by ' + fp(bankAfter - bank));
+
+  let verdict, vClass;
+  if (!canAfford) { verdict = '❌ Cannot Afford'; vClass = 'bad'; }
+  else if (totalPts >= 50 && issues.length === 0) { verdict = '✅ Strong Trade — Do It'; vClass = 'good'; }
+  else if (totalPts >= 20) { verdict = '👍 Trade Recommended'; vClass = 'good'; }
+  else if (totalPts >= 0 && issues.length === 0) { verdict = '➡️ Marginal — Consider Holding'; vClass = 'meh'; }
+  else if (totalPts < 0) { verdict = '⚠️ Avoid — Net Negative'; vClass = 'bad'; }
+  else { verdict = '🤔 Situational'; vClass = 'meh'; }
+
+  const verdictEl = document.getElementById('tr-verdict');
+  verdictEl.textContent = verdict;
+  verdictEl.className = 'verdict-box ' + vClass;
+
+  document.getElementById('tr-bank-after').textContent = fp(bankAfter);
+  document.getElementById('tr-bank-after').className = 'result-value ' + (canAfford ? 'green' : 'red');
+  document.getElementById('tr-pts-round').textContent = (ptsPerRound >= 0 ? '+' : '') + Math.round(ptsPerRound * 10)/10;
+  document.getElementById('tr-pts-round').className = 'result-value ' + (ptsPerRound >= 0 ? 'green' : 'red');
+  document.getElementById('tr-pts-total').textContent = (totalPts >= 0 ? '+' : '') + totalPts + ' pts';
+  document.getElementById('tr-pts-total').className = 'result-value ' + (totalPts >= 0 ? 'green' : 'red');
+
+  const prosConsEl = document.getElementById('tr-pros-cons');
+  prosConsEl.innerHTML = `
+    <div class="pros-cons-box">
+      <div class="pros-cons-title green">✅ Pros</div>
+      ${positives.length ? positives.map(p => `<div class="pros-cons-item">• ${p}</div>`).join('') : '<div class="pros-cons-item" style="color:rgba(255,255,255,0.2)">None identified</div>'}
+    </div>
+    <div class="pros-cons-box">
+      <div class="pros-cons-title red">⚠️ Cons</div>
+      ${issues.length ? issues.map(i => `<div class="pros-cons-item">• ${i}</div>`).join('') : '<div class="pros-cons-item" style="color:rgba(255,255,255,0.2)">None identified</div>'}
+    </div>`;
+
+  document.getElementById('tr-result').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOOL 4: BYE PLANNER
+// ═══════════════════════════════════════════════════════
+
+const BYE_SCHEDULE = {
+  9:  ['Cowboys', 'Bulldogs', 'Titans', 'Rabbitohs', 'Sea Eagles', 'Broncos'],
+  10: ['Warriors', 'Panthers', 'Storm', 'Tigers', 'Raiders', 'Knights'],
+  11: ['Sharks', 'Roosters', 'Dolphins', 'Dragons', 'Eels', 'Wests Tigers'],
+};
+
+function getByeRound(team) {
+  const norm = team.toLowerCase().trim();
+  for (const [round, teams] of Object.entries(BYE_SCHEDULE)) {
+    if (teams.some(t => norm.includes(t.toLowerCase()) || t.toLowerCase().includes(norm))) {
+      return Number(round);
+    }
+  }
+  return null;
+}
+
+function calcByePlanner() {
+  const raw = document.getElementById('bye-squad').value.trim();
+  if (!raw) return;
+
+  const squad = raw.split('\n').map(line => {
+    const parts = line.split(',').map(s => s.trim());
+    return { name: parts[0], team: parts[1] || '', position: parts[2] || '?' };
+  }).filter(p => p.name && p.team);
+
+  const byeRounds = {};
+  squad.forEach(p => {
+    const r = getByeRound(p.team);
+    if (r !== null) {
+      if (!byeRounds[r]) byeRounds[r] = [];
+      byeRounds[r].push(p);
+    }
+  });
+
+  const recs = [];
+  const gridHTML = Object.entries(byeRounds).sort((a,b) => a[0]-b[0]).map(([round, players]) => {
+    const risk = players.length >= 4 ? 'HIGH' : players.length >= 2 ? 'MEDIUM' : 'LOW';
+    const riskColor = risk === 'HIGH' ? '#ff5252' : risk === 'MEDIUM' ? '#ffd740' : '#00e676';
+    if (risk === 'HIGH') recs.push(`⚠️ Round ${round}: ${players.length} players on bye — consider trading to reduce exposure`);
+    const playerRows = players.map(p => `<div class="bye-player">${p.name} <span style="color:rgba(255,255,255,0.35)">${p.team} · ${p.position}</span></div>`).join('');
+    return `<div class="bye-card">
+      <div class="bye-round-label">Round</div>
+      <div class="bye-round-num">${round}</div>
+      <div class="bye-count ${risk === 'HIGH' ? 'danger' : ''}">${players.length} on bye <span style="color:${riskColor};font-size:0.55rem;margin-left:4px">${risk}</span></div>
+      <div style="margin-top:0.5rem">${playerRows}</div>
+    </div>`;
+  }).join('');
+
+  if (recs.length === 0) recs.push('✅ Your bye coverage looks good across all rounds.');
+
+  document.getElementById('bye-summary').innerHTML = `<p style="font-size:0.72rem;color:rgba(255,255,255,0.5);margin-bottom:1rem">${squad.length} players analysed · ${Object.keys(byeRounds).length} bye round${Object.keys(byeRounds).length !== 1 ? 's' : ''} affected</p>`;
+  document.getElementById('bye-grid-output').innerHTML = gridHTML;
+  document.getElementById('bye-recs').innerHTML = recs.map(r => `<p style="font-size:0.7rem;color:rgba(255,255,255,0.55);margin-bottom:0.4rem">${r}</p>`).join('');
+  document.getElementById('bye-result').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOOL 5: DRAFTSTARS OPTIMIZER
+// ═══════════════════════════════════════════════════════
+
+const DS_SLOTS = [
+  { slot: 'Fullback',    pos: ['FB'],               count: 1 },
+  { slot: 'Halfback',    pos: ['HB'],               count: 1 },
+  { slot: 'Five-Eight',  pos: ['FE'],               count: 1 },
+  { slot: 'Hooker',      pos: ['HOK'],              count: 1 },
+  { slot: 'Centre',      pos: ['CTR'],              count: 2 },
+  { slot: 'Wing',        pos: ['WG'],               count: 2 },
+  { slot: 'Forward',     pos: ['PROP','FRF','2RF','LK'], count: 1 },
+];
+const DS_CAP = 50000;
+const POS_ALIASES = { HFB: 'HB', CTW: 'CTR', FRF: 'PROP', MID: '2RF', LOCK: 'LK', HALF: 'HB' };
+
+function normalizePos(p) { return POS_ALIASES[p.toUpperCase()] || p.toUpperCase(); }
+
+function greedyDS(pool, lock, maxTeam) {
+  const lineup = [], used = new Set(), teamCounts = {};
+  lock.forEach(n => {
+    const p = pool.find(pl => pl.name.toLowerCase() === n.toLowerCase());
+    if (p && !used.has(p.name)) { lineup.push(p); used.add(p.name); teamCounts[p.team] = (teamCounts[p.team]||0)+1; }
+  });
+  DS_SLOTS.forEach(({ pos, count }) => {
+    let filled = lineup.filter(p => pos.includes(p.position)).length;
+    const needed = count - filled;
+    const candidates = pool.filter(p => pos.includes(p.position) && !used.has(p.name) && (teamCounts[p.team]||0) < maxTeam)
+      .sort((a,b) => b.pts - a.pts);
+    let picked = 0;
+    for (const p of candidates) {
+      if (picked >= needed) break;
+      const curSalary = lineup.reduce((s,pl) => s+pl.salary, 0);
+      if (curSalary + p.salary <= DS_CAP) {
+        lineup.push(p); used.add(p.name);
+        teamCounts[p.team] = (teamCounts[p.team]||0)+1;
+        picked++;
+      }
+    }
+  });
+  if (lineup.length < 9) return null;
+  return { lineup, salary: lineup.reduce((s,p)=>s+p.salary,0), pts: lineup.reduce((s,p)=>s+p.pts,0) };
+}
+
+function calcOptimizer() {
+  const raw      = document.getElementById('opt-players').value.trim();
+  const lockRaw  = document.getElementById('opt-lock').value.trim();
+  const excRaw   = document.getElementById('opt-exclude').value.trim();
+  const maxTeam  = parseInt(document.getElementById('opt-max-team').value) || 4;
+
+  if (!raw) return;
+
+  const lock    = lockRaw ? lockRaw.split(',').map(s=>s.trim()) : [];
+  const exclude = excRaw  ? excRaw.split(',').map(s=>s.trim().toLowerCase()) : [];
+
+  const pool = raw.split('\n').map(line => {
+    const p = line.split(',').map(s=>s.trim());
+    return { name: p[0], position: normalizePos(p[1]||''), salary: parseInt(p[2])||0, pts: parseFloat(p[3])||0, team: p[4]||'Unknown' };
+  }).filter(p => p.name && p.position && !exclude.includes(p.name.toLowerCase()));
+
+  let best = greedyDS(pool, lock, maxTeam);
+  if (!best) { alert('Could not build a valid lineup. Check positions and salary cap.'); return; }
+
+  // Hill climbing
+  for (let i = 0; i < 1500; i++) {
+    const swappable = best.lineup.filter(p => !lock.map(n=>n.toLowerCase()).includes(p.name.toLowerCase()));
+    if (!swappable.length) break;
+    const out = swappable[Math.floor(Math.random()*swappable.length)];
+    const remaining = DS_CAP - (best.salary - out.salary);
+    const usedNames = new Set(best.lineup.map(p=>p.name));
+    const candidates = pool.filter(p =>
+      !usedNames.has(p.name) && p.position === out.position &&
+      p.salary <= remaining && !lock.map(n=>n.toLowerCase()).includes(p.name.toLowerCase())
+    ).sort((a,b)=>b.pts-a.pts).slice(0,8);
+
+    for (const c of candidates) {
+      const newLineup = best.lineup.map(p => p.name===out.name ? c : p);
+      const newSalary = newLineup.reduce((s,p)=>s+p.salary,0);
+      const newPts    = newLineup.reduce((s,p)=>s+p.pts,0);
+      if (newSalary <= DS_CAP && newPts > best.pts) {
+        best = { lineup: newLineup, salary: newSalary, pts: newPts };
+        break;
+      }
+    }
+  }
+
+  document.getElementById('opt-pts').textContent = Math.round(best.pts * 10)/10 + ' pts';
+  document.getElementById('opt-salary').textContent = '$' + best.salary.toLocaleString();
+  document.getElementById('opt-remaining').textContent = '$' + (DS_CAP - best.salary).toLocaleString();
+
+  const slotMap = {};
+  DS_SLOTS.forEach(s => s.pos.forEach(p => { if (!slotMap[p]) slotMap[p] = s.slot; }));
+
+  document.getElementById('opt-lineup').innerHTML = best.lineup.map((p,i) =>
+    `<div class="lineup-card">
+      <span class="lineup-pos">${p.position}</span>
+      <span class="lineup-name">${p.name}</span>
+      <span class="lineup-salary">${fp(p.salary)}</span>
+      <span class="lineup-pts">${p.pts} pts</span>
+    </div>`
+  ).join('');
+
+  document.getElementById('opt-result').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOOL 6: MATCHUP
+// ═══════════════════════════════════════════════════════
+
+const DEFENCE_STATS = {
+  HOK: [
+    { team: 'Tigers', avg: 72 }, { team: 'Bulldogs', avg: 68 }, { team: 'Knights', avg: 65 },
+    { team: 'Raiders', avg: 63 }, { team: 'Warriors', avg: 61 }, { team: 'Dolphins', avg: 59 },
+    { team: 'Dragons', avg: 57 }, { team: 'Eels', avg: 55 }, { team: 'Roosters', avg: 54 },
+    { team: 'Cowboys', avg: 52 }, { team: 'Sea Eagles', avg: 50 }, { team: 'Titans', avg: 49 },
+    { team: 'Sharks', avg: 48 }, { team: 'Broncos', avg: 47 }, { team: 'Storm', avg: 45 },
+    { team: 'Panthers', avg: 43 }, { team: 'Rabbitohs', avg: 41 },
+  ],
+  HFB: [
+    { team: 'Bulldogs', avg: 78 }, { team: 'Tigers', avg: 74 }, { team: 'Dragons', avg: 70 },
+    { team: 'Knights', avg: 67 }, { team: 'Raiders', avg: 64 }, { team: 'Warriors', avg: 62 },
+    { team: 'Dolphins', avg: 60 }, { team: 'Cowboys', avg: 58 }, { team: 'Eels', avg: 56 },
+    { team: 'Titans', avg: 54 }, { team: 'Sea Eagles', avg: 52 }, { team: 'Roosters', avg: 51 },
+    { team: 'Sharks', avg: 49 }, { team: 'Broncos', avg: 47 }, { team: 'Storm', avg: 45 },
+    { team: 'Rabbitohs', avg: 43 }, { team: 'Panthers', avg: 41 },
+  ],
+  FB: [
+    { team: 'Bulldogs', avg: 71 }, { team: 'Tigers', avg: 68 }, { team: 'Dragons', avg: 64 },
+    { team: 'Knights', avg: 61 }, { team: 'Warriors', avg: 58 }, { team: 'Dolphins', avg: 56 },
+    { team: 'Cowboys', avg: 54 }, { team: 'Raiders', avg: 52 }, { team: 'Eels', avg: 50 },
+    { team: 'Titans', avg: 48 }, { team: 'Sea Eagles', avg: 47 }, { team: 'Roosters', avg: 45 },
+    { team: 'Sharks', avg: 44 }, { team: 'Broncos', avg: 42 }, { team: 'Storm', avg: 41 },
+    { team: 'Rabbitohs', avg: 39 }, { team: 'Panthers', avg: 37 },
+  ],
+  CTW: [
+    { team: 'Knights', avg: 58 }, { team: 'Tigers', avg: 56 }, { team: 'Bulldogs', avg: 54 },
+    { team: 'Warriors', avg: 51 }, { team: 'Raiders', avg: 49 }, { team: 'Dragons', avg: 47 },
+    { team: 'Dolphins', avg: 45 }, { team: 'Eels', avg: 43 }, { team: 'Cowboys', avg: 42 },
+    { team: 'Titans', avg: 40 }, { team: 'Roosters', avg: 39 }, { team: 'Sea Eagles', avg: 38 },
+    { team: 'Sharks', avg: 37 }, { team: 'Broncos', avg: 36 }, { team: 'Rabbitohs', avg: 35 },
+    { team: 'Storm', avg: 34 }, { team: 'Panthers', avg: 32 },
+  ],
+  FRF: [
+    { team: 'Bulldogs', avg: 55 }, { team: 'Tigers', avg: 53 }, { team: 'Knights', avg: 51 },
+    { team: 'Raiders', avg: 49 }, { team: 'Warriors', avg: 47 }, { team: 'Dragons', avg: 45 },
+    { team: 'Dolphins', avg: 43 }, { team: 'Eels', avg: 42 }, { team: 'Cowboys', avg: 41 },
+    { team: 'Roosters', avg: 40 }, { team: 'Titans', avg: 39 }, { team: 'Sharks', avg: 38 },
+    { team: 'Sea Eagles', avg: 37 }, { team: 'Broncos', avg: 36 }, { team: 'Rabbitohs', avg: 35 },
+    { team: 'Storm', avg: 33 }, { team: 'Panthers', avg: 31 },
+  ],
+  MID: [
+    { team: 'Bulldogs', avg: 65 }, { team: 'Tigers', avg: 62 }, { team: 'Knights', avg: 59 },
+    { team: 'Warriors', avg: 57 }, { team: 'Dragons', avg: 55 }, { team: 'Raiders', avg: 53 },
+    { team: 'Dolphins', avg: 51 }, { team: 'Eels', avg: 49 }, { team: 'Cowboys', avg: 47 },
+    { team: 'Roosters', avg: 46 }, { team: 'Titans', avg: 45 }, { team: 'Sea Eagles', avg: 43 },
+    { team: 'Sharks', avg: 42 }, { team: 'Broncos', avg: 41 }, { team: 'Rabbitohs', avg: 40 },
+    { team: 'Storm', avg: 38 }, { team: 'Panthers', avg: 36 },
+  ],
+};
+
+function getStars(rank, total) {
+  const pct = (total - rank) / (total - 1);
+  const n = Math.round(pct * 4) + 1;
+  return { stars: '★'.repeat(n) + '☆'.repeat(5-n), rating: n };
+}
+
+function getLabelClass(rating) {
+  return ['', 'avoid', 'tough', 'neutral', 'great', 'elite'][rating];
+}
+function getLabelText(rating) {
+  return ['', 'Avoid', 'Tough', 'Neutral', 'Great', 'Elite'][rating];
+}
+
+function calcMatchup() {
+  const pos  = document.getElementById('mu-position').value;
+  const view = document.getElementById('mu-view').value;
+  const data = DEFENCE_STATS[pos] || [];
+  const sorted = [...data].sort((a,b) => b.avg - a.avg);
+  const total = sorted.length;
+
+  const showAll = view === 'all';
+  const teams = showAll ? sorted : sorted.slice(0, 5);
+
+  document.getElementById('mu-list').innerHTML = teams.map((t, i) => {
+    const { stars, rating } = getStars(i + 1, total);
+    const lc = getLabelClass(rating);
+    const lt = getLabelText(rating);
+    return `<div class="matchup-row">
+      <span class="matchup-team">${t.team}</span>
+      <span class="matchup-stars">${stars}</span>
+      <span class="matchup-avg">${t.avg} pts conceded</span>
+      <span class="matchup-label ${lc}">${lt}</span>
+    </div>`;
+  }).join('');
+}
+
+// init matchup on load
+calcMatchup();
+
+// ═══════════════════════════════════════════════════════
+// TOOL 7: SQUAD BUILDER
+// ═══════════════════════════════════════════════════════
+
+const NRL_REQS = [
+  { pos: 'FB',  label: 'Fullback',         count: 1 },
+  { pos: 'CTW', label: 'Centre / Wing',    count: 4 },
+  { pos: 'HFB', label: 'Half / Five-Eight', count: 2 },
+  { pos: 'HOK', label: 'Hooker',           count: 2 },
+  { pos: 'FRF', label: 'Front Row',        count: 4 },
+  { pos: 'MID', label: 'Back Row / Lock',  count: 4 },
+];
+const SC_REQS = [
+  { pos: 'FB',   label: 'Fullback', count: 1 },
+  { pos: 'CTW',  label: 'Back',     count: 4 },
+  { pos: 'HFB',  label: 'Half / Five-Eight', count: 2 },
+  { pos: 'HOK',  label: 'Hooker',   count: 2 },
+  { pos: 'FRF',  label: 'Prop',     count: 4 },
+  { pos: 'MID',  label: 'Forward',  count: 5 },
+];
+
+const SQ_ALIASES = {
+  FULLBACK: 'FB', WING: 'CTW', CENTRE: 'CTW', CENTER: 'CTW', CTR: 'CTW', WG: 'CTW',
+  HALFBACK: 'HFB', HALF: 'HFB', HB: 'HFB', 'FIVE-EIGHTH': 'HFB', FE: 'HFB',
+  HOOKER: 'HOK', PROP: 'FRF', FRF: 'FRF', LOCK: 'MID', 'SECOND ROW': 'MID',
+  '2RF': 'MID', LK: 'MID', MID: 'MID', BACK: 'CTW',
+};
+
+function sqNorm(p) { return SQ_ALIASES[p.toUpperCase().trim()] || null; }
+
+function calcSquad() {
+  const game    = document.getElementById('sq-game').value;
+  const mustRaw = document.getElementById('sq-must').value.trim();
+  const excRaw  = document.getElementById('sq-exclude').value.trim();
+  const raw     = document.getElementById('sq-players').value.trim();
+
+  if (!raw) return;
+
+  const must    = mustRaw ? mustRaw.split(',').map(s=>s.trim().toLowerCase()) : [];
+  const exclude = excRaw  ? excRaw.split(',').map(s=>s.trim().toLowerCase()) : [];
+  const reqs    = game === 'supercoach' ? SC_REQS : NRL_REQS;
+  const cap     = game === 'supercoach' ? 6500000 : 6000000;
+
+  const pool = raw.split('\n').map(line => {
+    const p = line.split(',').map(s=>s.trim());
+    return { name: p[0], position: sqNorm(p[1]||''), price: parseInt(p[2])||0, avg: parseFloat(p[3])||0 };
+  }).filter(p => p.name && p.position && !exclude.includes(p.name.toLowerCase()));
+
+  const squad = [], used = new Set();
+  // Lock must-includes
+  must.forEach(n => {
+    const p = pool.find(pl => pl.name.toLowerCase() === n);
+    if (p && !used.has(p.name)) { squad.push(p); used.add(p.name); }
+  });
+  // Fill greedily
+  reqs.forEach(({ pos, count }) => {
+    const alreadyFilled = squad.filter(p => p.position === pos).length;
+    const needed = count - alreadyFilled;
+    const candidates = pool.filter(p => p.position === pos && !used.has(p.name)).sort((a,b) => b.avg - a.avg);
+    let picked = 0;
+    for (const p of candidates) {
+      if (picked >= needed) break;
+      const curSpend = squad.reduce((s,pl)=>s+pl.price,0);
+      if (curSpend + p.price <= cap) {
+        squad.push(p); used.add(p.name); picked++;
+      }
+    }
+  });
+
+  const totalPrice = squad.reduce((s,p)=>s+p.price,0);
+  const avgProjected = squad.length ? Math.round((squad.reduce((s,p)=>s+p.avg,0)/squad.length)*10)/10 : 0;
+
+  document.getElementById('sq-total').textContent = fp(totalPrice);
+  document.getElementById('sq-bank').textContent  = fp(cap - totalPrice);
+  document.getElementById('sq-avg').textContent   = avgProjected + ' pts avg';
+
+  const posHTML = reqs.map(({ pos, label, count }) => {
+    const posPlayers = squad.filter(p => p.position === pos);
+    const short = count - posPlayers.length;
+    const header = `<div class="squad-pos-header">${label} (${posPlayers.length}/${count})${short > 0 ? ' <span style="color:#ff5252">⚠️ short '+short+'</span>' : ''}</div>`;
+    const players = posPlayers.map(p =>
+      `<div class="squad-player"><span class="squad-player-name">${p.name}</span><span class="squad-player-meta">${fp(p.price)} · avg ${p.avg}</span></div>`
+    ).join('');
+    return `<div class="squad-position-block">${header}${players || '<div class="squad-player-meta" style="padding:0.3rem 0">No players filled</div>'}</div>`;
+  }).join('');
+
+  document.getElementById('sq-positions').innerHTML = posHTML;
+  document.getElementById('sq-result').classList.add('visible');
+}
+</script>
+
+</body>
+</html>

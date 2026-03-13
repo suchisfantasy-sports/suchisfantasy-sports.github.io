@@ -1,0 +1,23 @@
+{
+  "_note": "Sample player data structure — replace with real data each round. Prices and projections are illustrative only.",
+  "players": [
+    { "name": "Isaah Yeo",       "team": "Panthers",   "position": "MID",  "price": 682000, "salary": 9200, "projectedAvg": 62, "recentScores": [71, 58, 63] },
+    { "name": "James Fisher-Harris", "team": "Panthers", "position": "FRF", "price": 598000, "salary": 8100, "projectedAvg": 55, "recentScores": [48, 62, 55] },
+    { "name": "Nicho Hynes",     "team": "Sharks",     "position": "HFB",  "price": 724000, "salary": 9800, "projectedAvg": 67, "recentScores": [82, 74, 61] },
+    { "name": "Reece Walsh",     "team": "Broncos",    "position": "FB",   "price": 812000, "salary": 10800,"projectedAvg": 75, "recentScores": [88, 71, 79] },
+    { "name": "Harry Grant",     "team": "Storm",      "position": "HOK",  "price": 738000, "salary": 9900, "projectedAvg": 69, "recentScores": [77, 64, 72] },
+    { "name": "Kotoni Staggs",   "team": "Broncos",    "position": "CTW",  "price": 486000, "salary": 6500, "projectedAvg": 45, "recentScores": [51, 38, 47] },
+    { "name": "Joseph Suaalii",  "team": "Roosters",   "position": "CTW",  "price": 512000, "salary": 6900, "projectedAvg": 47, "recentScores": [53, 42, 49] },
+    { "name": "Mitch Moses",     "team": "Eels",       "position": "HFB",  "price": 655000, "salary": 8800, "projectedAvg": 60, "recentScores": [68, 55, 62] },
+    { "name": "Stefano Utoikamanu", "team": "Tigers",  "position": "FRF",  "price": 468000, "salary": 6200, "projectedAvg": 43, "recentScores": [49, 40, 44] },
+    { "name": "Angus Crichton",  "team": "Roosters",   "position": "MID",  "price": 554000, "salary": 7400, "projectedAvg": 51, "recentScores": [58, 47, 53] },
+    { "name": "Tyran Wishart",   "team": "Sea Eagles", "position": "FB",   "price": 398000, "salary": 5200, "projectedAvg": 36, "recentScores": [42, 31, 38] },
+    { "name": "Bradman Best",    "team": "Knights",    "position": "CTW",  "price": 442000, "salary": 5800, "projectedAvg": 40, "recentScores": [45, 36, 42] },
+    { "name": "Reed Mahoney",    "team": "Bulldogs",   "position": "HOK",  "price": 612000, "salary": 8200, "projectedAvg": 56, "recentScores": [61, 52, 58] },
+    { "name": "Jeremiah Nanai",  "team": "Cowboys",    "position": "CTW",  "price": 474000, "salary": 6300, "projectedAvg": 43, "recentScores": [50, 38, 44] },
+    { "name": "Taylan May",      "team": "Panthers",   "position": "CTW",  "price": 388000, "salary": 5100, "projectedAvg": 35, "recentScores": [40, 31, 37] },
+    { "name": "Cameron Murray",  "team": "Rabbitohs",  "position": "MID",  "price": 668000, "salary": 9000, "projectedAvg": 61, "recentScores": [66, 58, 62] },
+    { "name": "Tom Flegler",     "team": "Broncos",    "position": "FRF",  "price": 436000, "salary": 5700, "projectedAvg": 40, "recentScores": [44, 37, 41] },
+    { "name": "Dane Gagai",      "team": "Cowboys",    "position": "CTW",  "price": 352000, "salary": 4600, "projectedAvg": 32, "recentScores": [36, 28, 34] }
+  ]
+}

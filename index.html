@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Such Is Fantasy — Expert Fantasy Sports Intelligence</title>
   <meta name="description" content="Expert tips, real-time injury alerts & serious community for NRL, EPL, NBA and NFL fantasy players. $9.99/month.">
+  <meta name="theme-color" content="#18181B">
   <link rel="preconnect" href="https://api.fontshare.com">
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,8 +16,11 @@
 
   <style>
     :root {
-      --zinc: #18181B;
-      --cyan: #00F0FF;
+      --zinc:    #18181B;
+      --zinc2:   #1f1f22;
+      --zinc3:   #27272a;
+      --zinc4:   #3f3f46;
+      --cyan:    #00F0FF;
       --magenta: #FF003C;
       --surface: #1f1f22;
     }
@@ -49,7 +53,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 7rem 8vw 4rem;
+      padding: 5rem 8vw 4rem;
       overflow: hidden;
     }
 
@@ -379,6 +383,44 @@
       text-transform: uppercase;
     }
 
+    /* ── Footer ── */
+    footer {
+      padding: 2rem 6vw;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    footer .footer-logo {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+    footer .footer-logo span { color: var(--cyan); }
+    footer .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    footer .footer-links a {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    footer .footer-links a:hover { color: rgba(255,255,255,0.7); }
+    footer .footer-whop {
+      font-size: 0.65rem;
+      color: var(--cyan);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+    }
+
     /* ── Whop Checkout Modal ── */
     #checkout-modal {
       position: fixed;
@@ -528,42 +570,91 @@
       text-decoration: none;
     }
 
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 6vw;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(24,24,27,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-link {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: #fff; }
+    .nav-cta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--cyan);
+      color: #000;
+      padding: 0.55rem 1.25rem;
+      border-radius: 2px;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      text-decoration: none;
+      transition: box-shadow 0.2s;
+    }
+    .nav-cta:hover { box-shadow: 0 0 30px rgba(0,240,255,0.35); }
+    @media (max-width: 600px) {
+      .nav-links { gap: 1rem; }
+      .nav-link { display: none; }
+    }
+
     /* ── Announcement Banner ── */
     #announce-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 9999;
-      background: rgba(10,10,12,0.82);
-      border-bottom: 1px solid rgba(0,240,255,0.15);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      padding: 0.6rem 8vw;
+      background: rgba(0,240,255,0.05);
+      border-bottom: 1px solid rgba(0,240,255,0.12);
+      padding: 0.55rem 6vw;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
     #announce-bar .announce-text {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.5);
     }
     #announce-bar .announce-text strong {
-      color: #fff;
+      color: rgba(255,255,255,0.85);
       font-weight: 500;
     }
     #announce-bar .announce-cta {
       flex-shrink: 0;
       font-family: 'Clash Display', sans-serif;
       font-weight: 700;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       letter-spacing: 0.07em;
       color: var(--cyan);
       text-decoration: none;
-      border: 1px solid rgba(0,240,255,0.3);
-      padding: 0.3rem 0.85rem;
+      border: 1px solid rgba(0,240,255,0.25);
+      padding: 0.25rem 0.75rem;
       border-radius: 2px;
       white-space: nowrap;
       transition: background 0.2s ease, color 0.2s ease;
@@ -620,10 +711,20 @@
 </head>
 <body>
 
+  <!-- ── Nav ── -->
+  <nav>
+    <a href="index.html" class="nav-logo">Such Is <span>Fantasy</span></a>
+    <div class="nav-links">
+      <a href="tools.html" class="nav-link">Tools</a>
+      <a href="https://whop.com/suchisfantasy/" target="_blank" class="nav-link">Community</a>
+      <a href="https://whop.com/suchisfantasy/" class="nav-cta open-checkout">Join Now →</a>
+    </div>
+  </nav>
+
   <!-- ── Announcement Banner ── -->
   <div id="announce-bar">
-    <p class="announce-text"><strong>Stop losing to people with better intel.</strong> &nbsp;Expert tips, live injury alerts, real community — $9.99/mo.</p>
-    <a href="https://whop.com/suchisfantasy/" class="announce-cta open-checkout">Join Now →</a>
+    <p class="announce-text"><strong>Founding member pricing live.</strong> &nbsp;Fantasy Edge $9.99/mo · Fantasy Lab $24.99/mo — locked in for life.</p>
+    <a href="https://whop.com/suchisfantasy/" class="announce-cta open-checkout">Claim It →</a>
   </div>
 
   <!-- ════════════════════════════════════════
@@ -760,6 +861,25 @@
   </section>
 
   <!-- ════════════════════════════════════════
+       TOOLS TEASER
+  ════════════════════════════════════════ -->
+  <section style="position:relative;z-index:10;background:var(--zinc2);border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:4rem 8vw;">
+    <p class="section-eyebrow">Fantasy Tools — NRL · SuperCoach · Draftstars</p>
+    <h2 class="section-title clash" style="max-width:640px;margin-bottom:1rem">Every calculator<br>you need to win.</h2>
+    <p style="font-size:0.82rem;color:rgba(255,255,255,0.45);max-width:520px;line-height:1.85;margin-bottom:2.5rem">Break-even, price change predictor, trade calculator, bye planner, Draftstars optimizer, matchup analysis, squad builder — all in one place. Free tools open to everyone. Advanced tools for Fantasy Lab members.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:2.5rem">
+      <span class="sport-tag" style="color:rgba(0,230,118,0.9);border-color:rgba(0,230,118,0.25)">✓ Break-Even — Free</span>
+      <span class="sport-tag" style="color:rgba(0,230,118,0.9);border-color:rgba(0,230,118,0.25)">✓ Price Change — Free</span>
+      <span class="sport-tag">Trade Calculator</span>
+      <span class="sport-tag">Bye Planner</span>
+      <span class="sport-tag" style="color:var(--magenta);border-color:rgba(255,0,60,0.25)">⚡ DS Optimizer</span>
+      <span class="sport-tag" style="color:var(--magenta);border-color:rgba(255,0,60,0.25)">⚡ Matchup Analysis</span>
+      <span class="sport-tag" style="color:var(--magenta);border-color:rgba(255,0,60,0.25)">⚡ Squad Builder</span>
+    </div>
+    <a href="tools.html" class="cta-btn" style="display:inline-flex">Open Fantasy Tools →</a>
+  </section>
+
+  <!-- ════════════════════════════════════════
        SPORTS
   ════════════════════════════════════════ -->
   <section id="sports">
@@ -837,9 +957,18 @@
       Get Access for $9.99/mo →
     </a>
     <p class="price-note" style="margin-top:1.25rem;">Founding member pricing · Less than a coffee a week · Cancel anytime</p>
-    <p class="footer-note">SCPB — Such Could Be Predicted &nbsp;·&nbsp; 2025</p>
   </section>
 
+  <!-- ── Footer ── -->
+  <footer>
+    <a href="index.html" class="footer-logo">Such Is <span>Fantasy</span></a>
+    <div class="footer-links">
+      <a href="tools.html">Fantasy Tools</a>
+      <a href="https://whop.com/suchisfantasy/" target="_blank">Community</a>
+      <a href="https://whop.com/suchisfantasy/" target="_blank">Join</a>
+    </div>
+    <a href="https://whop.com/suchisfantasy/" target="_blank" class="footer-whop">whop.com/suchisfantasy →</a>
+  </footer>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);

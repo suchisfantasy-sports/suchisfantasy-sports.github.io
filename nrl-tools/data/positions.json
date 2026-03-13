@@ -1,0 +1,32 @@
+{
+  "nrl_fantasy": {
+    "FB":  { "label": "Fullback",          "slots": 1, "eligible": ["FB"] },
+    "CTW": { "label": "Centre / Wing",     "slots": 4, "eligible": ["CTR", "WG", "CTW"] },
+    "HFB": { "label": "Halfback / Five-Eighth", "slots": 2, "eligible": ["HB", "FE", "HFB"] },
+    "HOK": { "label": "Hooker",            "slots": 2, "eligible": ["HOK"] },
+    "FRF": { "label": "Front Row (Prop)",  "slots": 4, "eligible": ["PROP", "FRF"] },
+    "MID": { "label": "Back Row / Lock",   "slots": 4, "eligible": ["2RF", "LK", "MID"] }
+  },
+  "supercoach": {
+    "FB":   { "label": "Fullback",         "slots": 1, "eligible": ["FB"] },
+    "BACK": { "label": "Back",             "slots": 4, "eligible": ["CTR", "WG", "BACK"] },
+    "HFB":  { "label": "Half / Five-Eighth", "slots": 2, "eligible": ["HB", "FE", "HFB"] },
+    "HOK":  { "label": "Hooker",           "slots": 2, "eligible": ["HOK"] },
+    "FRF":  { "label": "Prop",             "slots": 4, "eligible": ["PROP", "FRF"] },
+    "MID":  { "label": "Forward",          "slots": 5, "eligible": ["2RF", "LK", "MID"] }
+  },
+  "draftstars": {
+    "HB":   { "label": "Halfback",         "slots": 1 },
+    "FE":   { "label": "Five-Eighth",      "slots": 1 },
+    "FB":   { "label": "Fullback",         "slots": 1 },
+    "HOK":  { "label": "Hooker",           "slots": 1 },
+    "CTR":  { "label": "Centre",           "slots": 2 },
+    "WG":   { "label": "Wing",             "slots": 2 },
+    "FWD":  { "label": "Forward",          "slots": 1, "eligible": ["PROP","FRF","2RF","LK"] }
+  },
+  "nrl_teams": [
+    "Broncos", "Raiders", "Bulldogs", "Sharks", "Titans", "Sea Eagles",
+    "Storm", "Knights", "Cowboys", "Eels", "Panthers", "Rabbitohs",
+    "Dragons", "Roosters", "Warriors", "Tigers", "Dolphins", "Bears"
+  ]
+}

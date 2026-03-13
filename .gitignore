@@ -2,6 +2,12 @@
 rss-bot/.env
 rss-bot/seen.json
 rss-bot/node_modules/
+nrl-tools/.env
+nrl-tools/node_modules/
+
+# Claude Code internals
+.claude/
+.mcp.json
 
 # OS
 .DS_Store
