@@ -2,12 +2,21 @@
 // Polls sports RSS feeds every 10 minutes and posts injury/team news to Discord
 // Node.js 18+ required (uses built-in fetch)
 
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const Parser = require('rss-parser');
 const fs     = require('fs');
 const path   = require('path');
 
-const parser    = new Parser({ timeout: 10000 });
+const parser = new Parser({
+  timeout: 10000,
+  customFields: {
+    item: [
+      ['media:content',   'mediaContent',   { keepArray: false }],
+      ['media:thumbnail', 'mediaThumbnail', { keepArray: false }],
+      ['enclosure',       'enclosure'],
+    ]
+  }
+});
 const SEEN_FILE = path.join(__dirname, 'seen.json');
 const INTERVAL  = 10 * 60 * 1000; // 10 minutes
 
@@ -17,9 +26,6 @@ const FEEDS = {
   nrl: [
     'https://www.zerotackle.com/feed/',
     'https://www.leaguefreak.com/feed/',
-    'https://rss.app/feeds/X0jwiY7Ayh0wM4kb.xml',
-    'https://rss.app/feeds/wstLPJdt7oEUA8UG.xml',
-    'https://rss.app/feeds/FhMZUs3u2V9PJsJx.xml',
   ],
   epl: [
     'https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml',
@@ -59,6 +65,15 @@ const COLORS = {
   podcast: 0x1DB954, // Spotify green
 };
 
+// ── Sport icon emojis ───────────────────────────────────────────────────────
+const SPORT_ICONS = {
+  nrl:     '🏉',
+  epl:     '⚽',
+  nba:     '🏀',
+  nfl:     '🏈',
+  podcast: '🎙️',
+};
+
 // ── Sport display names ─────────────────────────────────────────────────────
 const SPORT_NAMES = {
   nrl:     'NRL',
@@ -90,6 +105,33 @@ const KEYWORDS = [
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
+function extractImage(item) {
+  // 1. media:content (ESPN, most sports RSS feeds)
+  const mc = item.mediaContent;
+  if (mc?.$?.url && /\.(jpe?g|png|webp|gif)/i.test(mc.$.url)) return mc.$.url;
+
+  // 2. media:thumbnail
+  const mt = item.mediaThumbnail;
+  if (mt?.$?.url) return mt.$.url;
+
+  // 3. enclosure with image mime type
+  const enc = item.enclosure;
+  if (enc?.url && /image/i.test(enc.type || '')) return enc.url;
+
+  // 4. First <img> in content:encoded or content
+  const html = item['content:encoded'] || item.content || '';
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (match) return match[1];
+
+  return null;
+}
+
+function trimToTweet(text = '', max = 280) {
+  if (text.length <= max) return text;
+  const trimmed = text.slice(0, max).replace(/\s+\S*$/, '');
+  return trimmed + '…';
+}
+
 function isRelevant(title = '', snippet = '') {
   const text = `${title} ${snippet}`.toLowerCase();
   return KEYWORDS.some(kw => text.includes(kw));
@@ -119,27 +161,34 @@ function sleep(ms) {
 }
 
 async function postToDiscord(webhookUrl, item, sport) {
+  const icon    = SPORT_ICONS[sport];
+  const image   = extractImage(item);
+  const snippet = trimToTweet(item.contentSnippet || item.summary || '');
+  const source  = item.creator
+    ? `${item.creator} · ${item.feedTitle || SPORT_NAMES[sport]}`
+    : (item.feedTitle || SPORT_NAMES[sport]);
+
   const embed = {
-    title:       item.title?.slice(0, 256) || 'Team News Update',
-    url:         item.link || undefined,
-    description: (item.contentSnippet || item.summary || '').slice(0, 500) || undefined,
-    color:       COLORS[sport],
+    color: COLORS[sport],
     author: {
       name: sport === 'podcast'
-        ? `🎙️ Such Is Fantasy — New Episode`
-        : `📡 ${SPORT_NAMES[sport]} — Late Mail & Team News`,
+        ? `${icon} Such Is Fantasy — New Episode`
+        : `${icon} ${SPORT_NAMES[sport]} — Late Mail & Team News`,
     },
+    title:     item.title?.slice(0, 256) || 'Team News Update',
+    url:       item.link || undefined,
+    description: snippet || undefined,
+    thumbnail: image ? { url: image } : undefined,
     footer: {
-      text: item.creator
-        ? `${item.creator} via ${item.feedTitle || 'RSS'}`
-        : (item.feedTitle || 'RSS Feed'),
+      text: source,
     },
     timestamp: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
   };
 
-  // Remove undefined fields
+  // Strip undefined fields (Discord rejects them)
   if (!embed.url)         delete embed.url;
   if (!embed.description) delete embed.description;
+  if (!embed.thumbnail)   delete embed.thumbnail;
 
   const res = await fetch(webhookUrl, {
     method:  'POST',
