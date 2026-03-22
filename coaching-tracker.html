@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coaching Tracker — Such Is Fantasy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ✅ PASTE YOUR FIREBASE CONFIG BELOW (replace the placeholder values) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY",
+      authDomain: "PASTE_YOUR_AUTH_DOMAIN",
+      databaseURL: "PASTE_YOUR_DATABASE_URL",
+      projectId: "PASTE_YOUR_PROJECT_ID",
+      storageBucket: "PASTE_YOUR_STORAGE_BUCKET",
+      messagingSenderId: "PASTE_YOUR_SENDER_ID",
+      appId: "PASTE_YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const STEPS = [
+      { key: 'checkin',  label: 'Mon 6PM — Check-in received',  color: 'bg-blue-500' },
+      { key: 'feedback', label: 'Tue 9AM — Feedback sent',       color: 'bg-yellow-400' },
+      { key: 'update',   label: 'Tue 6PM — Updated team recv\'d', color: 'bg-orange-400' },
+      { key: 'squad',    label: 'Wed — Squad updated',           color: 'bg-green-500' },
+    ];
+
+    // PIN protection
+    const CORRECT_PIN = "2025";
+    let unlocked = sessionStorage.getItem('coach_unlocked') === 'true';
+
+    function getWeekKey() {
+      const now = new Date();
+      const day = now.getDay();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - ((day + 6) % 7));
+      return monday.toISOString().slice(0, 10);
+    }
+
+    function showPin() {
+      document.getElementById('pin-screen').classList.remove('hidden');
+      document.getElementById('app').classList.add('hidden');
+    }
+
+    function showApp() {
+      document.getElementById('pin-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
+
+    window.submitPin = function() {
+      const val = document.getElementById('pin-input').value;
+      if (val === CORRECT_PIN) {
+        sessionStorage.setItem('coach_unlocked', 'true');
+        unlocked = true;
+        showApp();
+        startListening();
+      } else {
+        document.getElementById('pin-error').classList.remove('hidden');
+        document.getElementById('pin-input').value = '';
+      }
+    }
+
+    let currentData = { clients: [], weeks: {} };
+
+    function startListening() {
+      const dbRef = ref(db, 'coaching');
+      onValue(dbRef, (snapshot) => {
+        currentData = snapshot.val() || { clients: [], weeks: {} };
+        if (!Array.isArray(currentData.clients)) currentData.clients = [];
+        if (!currentData.weeks) currentData.weeks = {};
+        render();
+      });
+    }
+
+    function saveData() {
+      set(ref(db, 'coaching'), currentData);
+    }
+
+    function render() {
+      const week = getWeekKey();
+      const d = new Date(week + 'T00:00:00');
+      document.getElementById('week-label').textContent =
+        'Week of ' + d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      const list = document.getElementById('client-list');
+      list.innerHTML = '';
+
+      if (!currentData.clients.length) {
+        list.innerHTML = '<p class="text-center text-gray-600 text-sm py-8">No clients yet — add one below</p>';
+        return;
+      }
+
+      currentData.clients.forEach((client, idx) => {
+        const weekData = (currentData.weeks[week] || {})[client] || {};
+        const doneCount = STEPS.filter(s => weekData[s.key]).length;
+        const allDone = doneCount === STEPS.length;
+
+        const card = document.createElement('div');
+        card.className = 'card rounded-xl p-4' + (allDone ? ' border-green-900' : '');
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold">${client}</span>
+              ${allDone
+                ? '<span class="text-xs bg-green-900 text-green-300 px-2 py-0.5 rounded-full">All done</span>'
+                : `<span class="text-xs text-gray-600">${doneCount}/${STEPS.length}</span>`}
+            </div>
+            <button onclick="window.removeClient(${idx})" class="text-gray-700 hover:text-red-500 transition text-xs">Remove</button>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            ${STEPS.map(s => `
+              <button
+                onclick="window.toggle('${client}', '${s.key}')"
+                class="check-btn ${weekData[s.key] ? 'done' : ''} flex items-center gap-3 text-left border border-gray-800 rounded-lg px-3 py-2.5 hover:border-gray-600 transition text-xs text-gray-400 w-full"
+              >
+                <span class="step-dot ${s.color}"></span>
+                <span class="leading-tight flex-1">${s.label}</span>
+                <svg class="ml-auto flex-shrink-0 w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
+            `).join('')}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    window.toggle = function(client, step) {
+      const week = getWeekKey();
+      if (!currentData.weeks[week]) currentData.weeks[week] = {};
+      if (!currentData.weeks[week][client]) currentData.weeks[week][client] = {};
+      currentData.weeks[week][client][step] = !currentData.weeks[week][client][step];
+      saveData();
+    }
+
+    window.addClient = function() {
+      const input = document.getElementById('new-name');
+      const name = input.value.trim();
+      if (!name) return;
+      if (!currentData.clients.includes(name)) {
+        currentData.clients.push(name);
+        saveData();
+      }
+      input.value = '';
+    }
+
+    window.removeClient = function(idx) {
+      if (!confirm('Remove this client?')) return;
+      currentData.clients.splice(idx, 1);
+      saveData();
+    }
+
+    window.resetWeek = function() {
+      if (!confirm('Reset all tasks for this week?')) return;
+      const week = getWeekKey();
+      currentData.weeks[week] = {};
+      saveData();
+    }
+
+    // Init
+    if (unlocked) {
+      showApp();
+      startListening();
+    } else {
+      showPin();
+    }
+
+    document.getElementById('pin-input')?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') window.submitPin();
+    });
+  </script>
+
+  <style>
+    body { background: #0f0f0f; font-family: 'Inter', sans-serif; }
+    .card { background: #1a1a1a; border: 1px solid #2a2a2a; }
+    .check-btn.done { background: #052e16; border-color: #166534 !important; }
+    .check-btn.done svg { display: block; }
+    .check-btn svg { display: none; }
+    .step-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  </style>
+</head>
+<body class="min-h-screen text-white">
+
+  <!-- PIN screen -->
+  <div id="pin-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="card rounded-2xl p-8 w-full max-w-xs text-center">
+      <h1 class="text-lg font-bold mb-1">Coaching Tracker</h1>
+      <p class="text-gray-500 text-sm mb-6">Such Is Fantasy</p>
+      <input id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"
+        class="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-center text-white text-lg tracking-widest mb-3 focus:outline-none focus:border-gray-500" />
+      <p id="pin-error" class="hidden text-red-500 text-xs mb-3">Incorrect PIN</p>
+      <button onclick="window.submitPin()"
+        class="w-full bg-white text-black font-semibold py-3 rounded-lg hover:bg-gray-200 transition">
+        Unlock
+      </button>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app" class="hidden p-4 pb-24 max-w-lg mx-auto">
+
+    <div class="flex items-center justify-between mb-2">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">Coaching Tracker</h1>
+        <p id="week-label" class="text-sm text-gray-500"></p>
+      </div>
+      <button onclick="window.resetWeek()" class="text-xs text-gray-500 border border-gray-700 rounded px-3 py-1.5 hover:border-gray-500 transition">
+        Reset Week
+      </button>
+    </div>
+
+    <!-- Schedule legend -->
+    <div class="card rounded-xl p-3 mb-5 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-gray-500">
+      <div class="flex items-center gap-2"><span class="step-dot bg-blue-500"></span>Mon 6PM — client sends</div>
+      <div class="flex items-center gap-2"><span class="step-dot bg-yellow-400"></span>Tue 9AM — you reply</div>
+      <div class="flex items-center gap-2"><span class="step-dot bg-orange-400"></span>Tue 6PM — updated team</div>
+      <div class="flex items-center gap-2"><span class="step-dot bg-green-500"></span>Wed — squad locked in</div>
+    </div>
+
+    <!-- Client list -->
+    <div id="client-list" class="space-y-3 mb-5"></div>
+
+    <!-- Add client -->
+    <div class="card rounded-xl p-4">
+      <p class="text-sm font-medium mb-3 text-gray-300">Add Client</p>
+      <div class="flex gap-2">
+        <input id="new-name" type="text" placeholder="Client name"
+          class="flex-1 bg-black border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
+          onkeydown="if(event.key==='Enter') window.addClient()" />
+        <button onclick="window.addClient()"
+          class="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-gray-200 transition">
+          Add
+        </button>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
