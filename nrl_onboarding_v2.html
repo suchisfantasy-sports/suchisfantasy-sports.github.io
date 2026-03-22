@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRL Fantasy Coach — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #2a3a55;
+    --accent: #f5a623;
+    --accent2: #e8321a;
+    --text: #e8edf5;
+    --muted: #6b7fa3;
+    --success: #22c55e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(-55deg, transparent, transparent 40px, rgba(245,166,35,0.025) 40px, rgba(245,166,35,0.025) 42px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  /* HEADER */
+  .header { text-align: center; margin-bottom: 40px; }
+  .logo-bar { display: inline-flex; align-items: center; gap: 12px; background: var(--accent2); color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; padding: 6px 18px; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); margin-bottom: 16px; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px, 8vw, 76px); line-height: 0.9; letter-spacing: 2px; }
+  h1 span { color: var(--accent); display: block; }
+  .subtitle { margin-top: 12px; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+  /* STEPS */
+  .steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 36px; flex-wrap: wrap; row-gap: 8px; }
+  .step { display: flex; align-items: center; gap: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); transition: color 0.3s; }
+  .step.active { color: var(--accent); }
+  .step.done { color: var(--success); }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .step-connector { width: 32px; height: 2px; background: var(--border); margin: 0 3px; }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent); padding: 28px 28px 24px; margin-bottom: 20px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
+  .card-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 4px; }
+  .card-desc { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+
+  /* TOGGLE */
+  .toggle-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .toggle-btn { flex: 1; min-width: 160px; padding: 18px 14px; background: var(--surface2); border: 2px solid var(--border); color: var(--text); font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); }
+  .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .toggle-btn.selected { background: var(--accent); border-color: var(--accent); color: #0a0e1a; }
+  .toggle-btn .badge { display: block; font-size: 10px; font-weight: 400; letter-spacing: 0.5px; margin-top: 3px; opacity: 0.8; }
+  .toggle-btn-block { width: 100%; text-align: left; padding: 16px 18px; clip-path: none; }
+
+  /* INPUTS */
+  input[type="text"] { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 15px; padding: 11px 13px; transition: border-color 0.2s; }
+  input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+  .input-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* SELECT */
+  select { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 13px; padding: 8px 32px 8px 10px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f5a623' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; cursor: pointer; transition: border-color 0.2s; }
+  select:focus { outline: none; border-color: var(--accent); }
+  select option { background: #1a2235; }
+
+  /* FIELD GRID */
+  .field-grid { display: grid; gap: 8px; }
+  .position-row { display: grid; grid-template-columns: 170px 1fr; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); padding: 9px 12px; transition: border-color 0.2s; }
+  .position-row:hover { border-color: rgba(245,166,35,0.4); }
+  .position-row.bench { border-left: 3px solid var(--muted); }
+  .pos-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+  .pos-badge { background: var(--accent2); color: #fff; font-size: 9px; padding: 2px 5px; font-weight: 700; letter-spacing: 1px; flex-shrink: 0; }
+  .pos-badge.bench-badge { background: #374151; }
+
+  /* DIVIDER */
+  .section-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 10px; }
+  .section-divider span { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--accent); white-space: nowrap; }
+  .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* LEAGUE UPLOAD */
+  .league-config { background: var(--surface2); border: 1px solid var(--border); padding: 16px; margin-bottom: 10px; }
+  .league-size-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .league-size-row label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .num-input { width: 70px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 16px; padding: 8px 10px; text-align: center; }
+  .num-input:focus { outline: none; border-color: var(--accent); }
+  .btn-sm { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 1px; padding: 8px 18px; cursor: pointer; border: none; background: var(--accent); color: #0a0e1a; transition: background 0.2s; }
+  .btn-sm:hover { background: #ffb830; }
+  .btn-sm-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-sm-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .league-team-card { background: var(--bg); border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 8px; }
+  .league-team-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; cursor: pointer; }
+  .league-team-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  .team-num-badge { background: var(--accent2); color: #fff; font-size: 10px; padding: 2px 7px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+  .collapse-btn { color: var(--muted); font-size: 12px; background: none; border: none; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+  .league-team-body { display: grid; gap: 6px; }
+  .league-team-body.collapsed { display: none; }
+  .lt-row { display: grid; grid-template-columns: 150px 1fr; align-items: center; gap: 8px; }
+  .lt-label { font-size: 11px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  /* PROGRESS BAR */
+  .progress-bar { height: 3px; background: var(--border); margin-bottom: 20px; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 10px; margin-top: 28px; justify-content: flex-end; }
+  .btn { font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 2px; padding: 13px 32px; cursor: pointer; border: none; transition: all 0.2s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+  .btn-primary { background: var(--accent); color: #0a0e1a; }
+  .btn-primary:hover { background: #ffb830; }
+  .btn-secondary { background: transparent; border: 2px solid var(--border); color: var(--muted); font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 2px; padding: 11px 24px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+  /* SUMMARY */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .summary-item { background: var(--surface2); border: 1px solid var(--border); padding: 9px 12px; }
+  .s-label { font-size: 10px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .s-value { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; }
+
+  /* SUCCESS */
+  .success-banner { text-align: center; padding: 48px 24px; }
+  .success-icon { font-size: 60px; margin-bottom: 14px; }
+  .success-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 46px; color: var(--success); letter-spacing: 2px; }
+  .success-banner p { color: var(--muted); margin-top: 8px; font-size: 15px; }
+
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .format-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 3px 9px; }
+
+  @media (max-width: 600px) {
+    .summary-grid { grid-template-columns: 1fr; }
+    .position-row { grid-template-columns: 120px 1fr; }
+    .input-row { grid-template-columns: 1fr; }
+    .lt-row { grid-template-columns: 110px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo-bar">⚡ Fantasy Coaching HQ</div>
+    <h1>Build Your<span>Dream Squad</span></h1>
+    <p class="subtitle">NRL Fantasy & SuperCoach Onboarding — 2026 Season</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:16%"></div></div>
+
+  <!-- STEPS -->
+  <div class="steps" id="stepIndicator">
+    <div class="step active" id="s1"><div class="step-num">1</div><span>Platform</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s2"><div class="step-num">2</div><span>Mode</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s3"><div class="step-num">3</div><span>Format</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s4"><div class="step-num">4</div><span>Your Team</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s5"><div class="step-num">5</div><span>League Teams</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s6"><div class="step-num">6</div><span>Confirm</span></div>
+  </div>
+
+  <!-- PAGE 1: Platform + Details -->
+  <div class="page active" id="page1">
+    <div class="card">
+      <div class="card-title">Choose Your Platform</div>
+      <div class="card-desc">Which fantasy competition are you playing in?</div>
+      <div class="toggle-group">
+        <button class="toggle-btn" onclick="sel('platform','supcoach',this)">SuperCoach<span class="badge">Fox Sports / News Corp</span></button>
+        <button class="toggle-btn" onclick="sel('platform','fantasy',this)">NRL Fantasy<span class="badge">nrl.com official</span></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Your Details</div>
+      <div class="card-desc">Let's get to know you, Coach</div>
+      <div class="input-row">
+        <div><label class="input-label">Your Name</label><input type="text" id="coachName" placeholder="e.g. Brad Fittler"></div>
+        <div><label class="input-label">Team Name</label><input type="text" id="teamName" placeholder="e.g. Storm Chasers"></div>
+      </div>
+      <div style="margin-top:14px;"><label class="input-label">Email (optional)</label><input type="text" id="coachEmail" placeholder="coach@example.com"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="goTo(2)">Next — Game Mode →</button></div>
+  </div>
+
+  <!-- PAGE 2: Mode -->
+  <div class="page" id="page2">
+    <div class="card">
+      <div class="card-title" id="modeTitleEl">Game Mode</div>
+      <div class="card-desc" id="modeDescEl">How are you competing this season?</div>
+      <div class="toggle-group" id="modeGroup">
+        <button class="toggle-btn" onclick="sel('mode','draft',this)">Draft<span class="badge">Live draft vs your league</span></button>
+        <button class="toggle-btn" onclick="sel('mode','classic',this)">Classic<span class="badge">Pick from the full player pool</span></button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goTo(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(3)">Next — Format →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Format -->
+  <div class="page" id="page3">
+    <div class="card">
+      <div class="card-title">Team Format</div>
+      <div class="card-desc">Select the squad structure your competition uses</div>
+      <div class="toggle-group" style="flex-direction:column; gap:8px;">
+        <button class="toggle-btn toggle-btn-block" onclick="sel('format','full',this)">
+          <span style="font-size:15px;">Full Format — 13 on Field + 4 Bench (17 total)</span>
+          <span class="badge">1 FB · 4 CTW · 1 FE · 1 HB · 3 2RF · 2 PR · 1 HKR + 4 bench</span>
+        </button>
+        <button class="toggle-btn toggle-btn-block" onclick="sel('format','mini',this)">
+          <span style="font-size:15px;">Mini Format — 9 on Field + 4 Bench (13 total)</span>
+          <span class="badge">1 FB · 2 CTW · 1 FE · 1 HB · 2 2RF · 1 PR · 1 HKR + 4 bench</span>
+        </button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goTo(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Next — Select Your Players →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 4: Your Team -->
+  <div class="page" id="page4">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="card-title" style="margin-bottom:0;">Your Current Squad</div>
+        <div class="format-badge" id="formatBadge">—</div>
+      </div>
+      <div class="card-desc">Select the players you currently have in each position slot</div>
+      <div class="field-grid" id="fieldGrid"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goTo(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(5)">Next — Upload League Teams →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 5: League Teams -->
+  <div class="page" id="page5">
+    <div class="card">
+      <div class="card-title">Your League Teams</div>
+      <div class="card-desc">Enter every other team in your league. This helps us identify trade targets, waiver priorities and matchup analysis.</div>
+      <div class="league-config">
+        <div class="league-size-row">
+          <label class="input-label" style="margin:0;">Number of teams in your league:</label>
+          <input type="number" class="num-input" id="leagueSize" value="10" min="4" max="20">
+          <button class="btn-sm" onclick="buildLeagueTeams()">Set Teams</button>
+        </div>
+        <p style="font-size:12px; color:var(--muted);">Include all teams <em>except</em> your own — enter their team names and rosters below.</p>
+      </div>
+      <div id="leagueTeamsContainer"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goTo(4)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(6)">Review & Confirm →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 6: Summary -->
+  <div class="page" id="page6">
+    <div class="card">
+      <div class="card-title">Review Your Submission</div>
+      <div class="card-desc">Make sure everything looks right before locking it in</div>
+      <div id="summaryContent"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goTo(5)">← Edit</button>
+      <button class="btn btn-primary" onclick="submit()">Lock It In ✓</button>
+    </div>
+  </div>
+
+  <!-- PAGE 7: Done -->
+  <div class="page" id="page7">
+    <div class="card">
+      <div class="success-banner">
+        <div class="success-icon">🏆</div>
+        <h2>You're On the Clock!</h2>
+        <p id="successMsg">Welcome aboard, Coach. Your squad and league have been registered.</p>
+        <p style="margin-top:20px; color:var(--accent); font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:1px; text-transform:uppercase;">Our coaching team will be in touch to help you dominate your league.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// 2026 NRL PLAYERS — sourced from official Round 1-3 team lists
+// Players tagged by their position(s) they can play
+// ──────────────────────────────────────────────
+const ALL_PLAYERS = {
+  fullback: [
+    "James Tedesco (Roosters)", "Dylan Edwards (Panthers)", "Reece Walsh (Broncos)",
+    "Kalyn Ponga (Knights)", "Tom Trbojevic (Sea Eagles)", "Nicho Hynes (Sharks)",
+    "Scott Drinkwater (Cowboys)", "Hamiso Tabuai-Fidow (Dolphins)", "Sualauvi Faalogo (Storm)",
+    "Isaiah Iongi (Eels)", "William Kennedy (Sharks)", "Charnze Nicoll-Klokstad (Warriors)",
+    "Keano Kini (Titans)", "Kaeo Weekes (Raiders)", "Connor Tracey (Bulldogs)",
+    "Clinton Gutherson (Dragons)", "Jye Gray (Rabbitohs)", "AJ Brimson (Titans)",
+    "Clint Gutherson (Dragons)", "Ryan Papenhuyzen (retired/released)",
+    "Daine Laurie (Raiders)", "Taine Tuaupiki (Warriors)"
+  ],
+  centre: [
+    "Stephen Crichton (Bulldogs)", "Bradman Best (Knights)", "Dane Gagai (Knights)",
+    "Joseph Manu (Roosters)", "Fetalaiga Pauga (Roosters)", "Robert Toia (Roosters)",
+    "Billy Smith (Roosters)", "Kotoni Staggs (Broncos)", "Gehamat Shibasaki (Broncos)",
+    "Deine Mariner (Broncos)", "Casey McLean (Panthers)", "Izack Tago (Panthers)",
+    "Thomas Jenkins (Panthers)", "Herbie Farnworth (Dolphins)", "Jake Averillo (Dolphins)",
+    "Moses Suli (Dragons)", "Valentine Holmes (Dragons)", "Jesse Ramien (Sharks)",
+    "KL Iro (Sharks)", "Jack Wighton (Rabbitohs)", "Latrell Mitchell (Rabbitohs)",
+    "Campbell Graham (Rabbitohs)", "Jack Howarth (Storm)", "Moses Leo (Storm)",
+    "Viliami Penisini (Eels)", "Brian Kelly (Eels)", "Jojo Fifita (Titans)",
+    "Max Feagai (Titans)", "Sebastian Kris (Raiders)", "Simi Sasagi (Raiders)",
+    "Ali Leiataua (Warriors)", "Adam Pompey (Warriors)", "Tolutau Koula (Sea Eagles)",
+    "Reuben Garrick (Sea Eagles)", "Enari Tuala (Bulldogs)", "Bronson Xerri (Bulldogs)",
+    "Jaxon Purdue (Cowboys)", "Tomas Chester (Cowboys)", "Christian Tuipulotu (Dragons)",
+    "Siosaia Talakai (Sharks)", "Matt Timoko (Raiders)", "Euan Aitken (Rabbitohs)"
+  ],
+  wing: [
+    "Josh Addo-Carr (Bulldogs)", "Xavier Coates (Storm)", "Brian To'o (Panthers)",
+    "Selwyn Cobbo (Dolphins)", "Jamayne Isaako (Dolphins)", "Alex Johnston (Rabbitohs)",
+    "Daniel Tupou (Roosters)", "Mark Nawaqanitawase (Roosters)", "Dominic Young (Knights)",
+    "Greg Marzhew (Knights)", "Josiah Karapani (Broncos)", "Jason Saab (Sea Eagles)",
+    "Lehi Hopoate (Sea Eagles)", "Dallin Watene-Zelezniak (Warriors)", "Roger Tuivasa-Sheck (Warriors)",
+    "Murray Taulagi (Cowboys)", "Braidon Burns (Cowboys)", "Nick Meaney (Storm)",
+    "William Warbrick (Storm)", "Bailey Simonsson (Eels)", "Sean Russell (Eels)",
+    "Jacob Kiraz (Bulldogs)", "Marcelo Montoya (Bulldogs)", "Sione Katoa (Sharks)",
+    "Samuel Stonestreet (Sharks)", "Setu Tu (Dragons)", "Christian Tuipulotu (Dragons)",
+    "Savelio Tamale (Raiders)", "Xavier Savage (Raiders)", "Sialetili Faeamani (Titans)",
+    "Phillip Sami (Titans)", "Hamiso Tabuai-Fidow (Dolphins)", "Grant Anderson (Broncos)",
+    "Paul Alamoti (Panthers)", "Jacob Kiraz (Bulldogs)", "Fetalaiga Pauga (Roosters)"
+  ],
+  fiveeight: [
+    "Cameron Munster (Storm)", "Blaize Talagi (Panthers)", "Ezra Mam (Broncos)",
+    "Matt Burton (Bulldogs)", "Kyle Flanagan (Dragons)", "Braydon Trindall (Sharks)",
+    "Daly Cherry-Evans (Roosters)", "Ethan Strange (Raiders)", "Luke Brooks (Sea Eagles)",
+    "Chanel Harris-Tavita (Warriors)", "Jake Clifford (Cowboys)", "AJ Brimson (Titans)",
+    "Lachlan Ilias (Titans)", "Kodi Nikorima (Dolphins)", "Jonah Pezet (Eels)",
+    "Fletcher Sharpe (Knights)", "Cody Walker (Rabbitohs)", "Ben Hunt (Broncos)",
+    "Jamal Fogarty (Sea Eagles)", "Ethan Sanders (Raiders)", "Isaiya Katoa (Dolphins)"
+  ],
+  halfback: [
+    "Nathan Cleary (Panthers)", "Lachlan Galvin (Bulldogs)", "Adam Reynolds (Broncos)",
+    "Jahrome Hughes (Storm)", "Mitchell Moses (Eels)", "Nicho Hynes (Sharks)",
+    "Sam Walker (Roosters)", "Tom Dearden (Cowboys)", "Ethan Sanders (Raiders)",
+    "Jamal Fogarty (Sea Eagles)", "Dylan Brown (Knights)", "Daniel Atkinson (Dragons)",
+    "Tanah Boyd (Warriors)", "Ashton Ward (Rabbitohs)", "Isaiya Katoa (Dolphins)",
+    "Lachlan Ilias (Titans)", "Ethan Strange (Raiders)", "Ben Hunt (Broncos)"
+  ],
+  secondrow: [
+    "Liam Martin (Panthers)", "Isaah Yeo (Panthers)", "Isaiah Papali'i (Panthers)",
+    "Luke Garner (Panthers)", "Scott Sorensen (Panthers)", "Angus Crichton (Roosters)",
+    "Nat Butcher (Roosters)", "Siua Wong (Roosters)", "Egan Butcher (Roosters)",
+    "Jack Gosiewski (Broncos)", "Jordan Riki (Broncos)", "Xavier Willison (Broncos)",
+    "Hudson Young (Raiders)", "Noah Martin (Raiders)", "Corey Horsburgh (Raiders)",
+    "Joe Chan (Storm)", "Ativalu Lisati (Storm)", "Alec MacDonald (Storm)",
+    "David Fifita (Rabbitohs)", "Euan Aitken (Rabbitohs)", "Cameron Murray (Rabbitohs)",
+    "Jack Williams (Eels)", "Kitione Kautoga (Eels)", "Jack de Belin (Eels)",
+    "Tyson Frizell (Knights)", "Jermaine McEwen (Knights)", "Dylan Lucas (Knights)",
+    "Heilum Luki (Cowboys)", "Sam McIntyre (Cowboys)", "Reuben Cotter (Cowboys)",
+    "Viliame Kikau (Bulldogs)", "Jacob Preston (Bulldogs)", "Jaeman Salmon (Bulldogs)",
+    "Luciano Leilua (Dragons)", "Jaydn Su'A (Dragons)", "Hamish Stewart (Dragons)",
+    "Briton Nikora (Sharks)", "Billy Burns (Sharks)", "Jesse Colquhoun (Sharks)",
+    "Connelly Lemuelu (Dolphins)", "Kulikefu Finefeuiaki (Dolphins)", "Morgan Knowles (Dolphins)",
+    "Haumole Olakau'atu (Sea Eagles)", "Ben Trbojevic (Sea Eagles)", "Jake Trbojevic (Sea Eagles)",
+    "Kurt Capewell (Warriors)", "Jacob Laban (Warriors)", "Erin Clark (Warriors)",
+    "Arama Hau (Titans)", "Beau Fermor (Titans)", "Chris Randall (Titans)",
+    "Morgan Smithies (Raiders)", "Zac Hosking (Raiders)"
+  ],
+  frontrower: [
+    "Payne Haas (Broncos)", "Corey Jensen (Broncos)", "James Fisher-Harris (Warriors)",
+    "Jackson Ford (Warriors)", "Stefano Utoikamanu (Storm)", "Josh King (Storm)",
+    "Tui Kamikamica (Storm)", "Davvy Moale (Storm)", "Junior Paulo (Eels)",
+    "J'maine Hopgood (Eels)", "Matt Doorey (Eels)", "Tallyn Da Silva (Eels)",
+    "Moses Leota (Panthers)", "Lindsay Smith (Panthers)", "Jacob Saifiti (Knights)",
+    "Trey Mooney (Knights)", "Thomas Cant (Knights)", "Jason Taumalolo (Cowboys)",
+    "Coen Hess (Cowboys)", "Thomas Mikaele (Cowboys)", "Max King (Bulldogs)",
+    "Samuel Hughes (Bulldogs)", "Emre Guler (Dragons)", "Toby Couchman (Dragons)",
+    "Blake Lawrie (Dragons)", "Josh Kerr (Dragons)", "Ryan Couchman (Dragons)",
+    "Addin Fonua-Blake (Sharks)", "Thomas Hazelton (Sharks)", "Oregon Kaufusi (Sharks)",
+    "Braden Hamlin-Uele (Sharks)", "Tom Flegler (Dolphins)", "Felise Kaufusi (Dolphins)",
+    "Tom Gilbert (Dolphins)", "Taniela Paseka (Sea Eagles)", "Siosiua Taukeiaho (Sea Eagles)",
+    "Nathan Brown (Sea Eagles)", "Ethan Bullemor (Sea Eagles)", "Kobe Hetherington (Sea Eagles)",
+    "Josh Papali'i (Raiders)", "Joseph Tapine (Raiders)", "Ata Mariota (Raiders)",
+    "Naufahu Whyte (Roosters)", "Lindsay Collins (Roosters)", "Tevita Tatola (Rabbitohs)",
+    "Keaon Koloamatangi (Rabbitohs)", "Lachlan Hubner (Rabbitohs)", "Moeaki Fotuaika (Titans)",
+    "Tino Fa'asuamaleaui (Titans)", "Klese Haas (Titans)", "Tukimihia Simpkins (Titans)"
+  ],
+  hooker: [
+    "Harry Grant (Storm)", "Cory Paix (Broncos)", "Ben Hunt (Broncos)",
+    "Bailey Hayward (Bulldogs)", "Damien Cook (Dragons)", "Blayke Brailey (Sharks)",
+    "Reed Mahoney (Cowboys)", "Brad Schneider (Dolphins)", "Kurt Donoghoe (Dolphins)",
+    "Jake Simpkin (Sea Eagles)", "Wayde Egan (Warriors)", "Phoenix Crossland (Knights)",
+    "Tom Starling (Raiders)", "Jayden Brailey (Raiders)", "Mitch Kenny (Panthers)",
+    "Ryley Smith (Eels)", "Bronson Garlick (Rabbitohs)", "Peter Mamouzelos (Rabbitohs)",
+    "Benaiah Ioelu (Roosters)", "Reece Robson (Roosters)", "Sam Verrills (Titans)",
+    "Jake Turpin (Bulldogs)", "Kurt Mann (Bulldogs)", "Sandon Smith (Knights)"
+  ]
+};
+
+// ──────────────────────────────────────────────
+// FORMATS
+// ──────────────────────────────────────────────
+const FORMATS = {
+  full: [
+    {id:'fb1',  pos:'fullback',   label:'Fullback',         badge:'FB'},
+    {id:'ctw1', pos:'centre',     label:'Centre / Wing 1',  badge:'CTW'},
+    {id:'ctw2', pos:'centre',     label:'Centre / Wing 2',  badge:'CTW'},
+    {id:'ctw3', pos:'wing',       label:'Centre / Wing 3',  badge:'CTW'},
+    {id:'ctw4', pos:'wing',       label:'Centre / Wing 4',  badge:'CTW'},
+    {id:'fe1',  pos:'fiveeight',  label:'Five-Eighth',      badge:'FE'},
+    {id:'hb1',  pos:'halfback',   label:'Halfback',         badge:'HB'},
+    {id:'sr1',  pos:'secondrow',  label:'Second Row 1',     badge:'2RF'},
+    {id:'sr2',  pos:'secondrow',  label:'Second Row 2',     badge:'2RF'},
+    {id:'sr3',  pos:'secondrow',  label:'Second Row 3',     badge:'2RF'},
+    {id:'pr1',  pos:'frontrower', label:'Front Rower 1',    badge:'PR'},
+    {id:'pr2',  pos:'frontrower', label:'Front Rower 2',    badge:'PR'},
+    {id:'hkr1', pos:'hooker',     label:'Hooker',           badge:'HKR'},
+    {id:'bnc1', pos:'fullback',   label:'Bench 1 (FB/CTW)', badge:'BNC', bench:true},
+    {id:'bnc2', pos:'secondrow',  label:'Bench 2 (FWD)',    badge:'BNC', bench:true},
+    {id:'bnc3', pos:'frontrower', label:'Bench 3 (FWD)',    badge:'BNC', bench:true},
+    {id:'bnc4', pos:'hooker',     label:'Bench 4 (HKR)',    badge:'BNC', bench:true},
+  ],
+  mini: [
+    {id:'fb1',  pos:'fullback',   label:'Fullback',         badge:'FB'},
+    {id:'ctw1', pos:'centre',     label:'Centre / Wing 1',  badge:'CTW'},
+    {id:'ctw2', pos:'wing',       label:'Centre / Wing 2',  badge:'CTW'},
+    {id:'fe1',  pos:'fiveeight',  label:'Five-Eighth',      badge:'FE'},
+    {id:'hb1',  pos:'halfback',   label:'Halfback',         badge:'HB'},
+    {id:'sr1',  pos:'secondrow',  label:'Second Row 1',     badge:'2RF'},
+    {id:'sr2',  pos:'secondrow',  label:'Second Row 2',     badge:'2RF'},
+    {id:'pr1',  pos:'frontrower', label:'Front Rower',      badge:'PR'},
+    {id:'hkr1', pos:'hooker',     label:'Hooker',           badge:'HKR'},
+    {id:'bnc1', pos:'fullback',   label:'Bench 1',          badge:'BNC', bench:true},
+    {id:'bnc2', pos:'secondrow',  label:'Bench 2',          badge:'BNC', bench:true},
+    {id:'bnc3', pos:'frontrower', label:'Bench 3',          badge:'BNC', bench:true},
+    {id:'bnc4', pos:'hooker',     label:'Bench 4',          badge:'BNC', bench:true},
+  ]
+};
+
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+const state = { platform:null, mode:null, format:null, coachName:'', teamName:'', email:'', myPlayers:{}, leagueTeams:[] };
+
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
+function sel(key, val, btn) {
+  state[key] = val;
+  const parent = btn.closest('.toggle-group');
+  parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  if (key === 'format') { buildFieldGrid(); document.getElementById('formatBadge').textContent = val === 'full' ? 'Full Format (17)' : 'Mini Format (13)'; }
+  if (key === 'platform' && val === 'fantasy') { state.mode = 'classic'; }
+}
+
+function makeOptions(pos) {
+  const list = ALL_PLAYERS[pos] || [];
+  const sorted = [...list].sort((a,b) => a.split(' ')[0].localeCompare(b.split(' ')[0]));
+  return '<option value="">— Select player —</option>' + sorted.map(p => `<option value="${p}">${p}</option>`).join('');
+}
+
+function buildFieldGrid() {
+  if (!state.format) return;
+  const slots = FORMATS[state.format];
+  state.myPlayers = {};
+  let html = ''; let benchStarted = false;
+  slots.forEach(slot => {
+    if (slot.bench && !benchStarted) { html += `<div class="section-divider"><span>Interchange / Bench</span></div>`; benchStarted = true; }
+    html += `<div class="position-row ${slot.bench?'bench':''}">
+      <div class="pos-label"><span class="pos-badge ${slot.bench?'bench-badge':''}">${slot.badge}</span>${slot.label}</div>
+      <select id="my_${slot.id}" onchange="state.myPlayers['${slot.id}']=this.value">${makeOptions(slot.pos)}</select>
+    </div>`;
+  });
+  document.getElementById('fieldGrid').innerHTML = html;
+}
+
+// ──────────────────────────────────────────────
+// LEAGUE TEAMS
+// ──────────────────────────────────────────────
+function buildLeagueTeams() {
+  const n = parseInt(document.getElementById('leagueSize').value) || 10;
+  const myName = document.getElementById('teamName').value || 'Your Team';
+  const container = document.getElementById('leagueTeamsContainer');
+  const slots = state.format ? FORMATS[state.format] : FORMATS['full'];
+  let html = '';
+  for (let i = 1; i <= n - 1; i++) {
+    html += `<div class="league-team-card">
+      <div class="league-team-header" onclick="toggleTeam(${i})">
+        <div class="league-team-title"><span class="team-num-badge">Team ${i}</span><input type="text" id="lt_name_${i}" placeholder="Opponent team name..." onclick="event.stopPropagation()" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 0;width:200px;"></div>
+        <button class="collapse-btn" id="lt_toggle_${i}">▲ COLLAPSE</button>
+      </div>
+      <div class="league-team-body" id="lt_body_${i}">
+        ${slots.map(slot => `
+          <div class="lt-row ${slot.bench?'bench':''}">
+            <div class="lt-label"><span class="pos-badge ${slot.bench?'bench-badge':''}" style="font-size:8px;">${slot.badge}</span> ${slot.label}</div>
+            <select id="lt_${i}_${slot.id}" style="font-size:12px;">${makeOptions(slot.pos)}</select>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
+  container.innerHTML = html || '<p style="color:var(--muted);font-size:13px;">Set the number of teams above and click Set Teams.</p>';
+}
+
+function toggleTeam(i) {
+  const body = document.getElementById(`lt_body_${i}`);
+  const btn = document.getElementById(`lt_toggle_${i}`);
+  if (body.classList.contains('collapsed')) { body.classList.remove('collapsed'); btn.textContent = '▲ COLLAPSE'; }
+  else { body.classList.add('collapsed'); btn.textContent = '▼ EXPAND'; }
+}
+
+// ──────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────
+function goTo(n) {
+  if (n === 2 && !state.platform) { alert('Please select a platform first.'); return; }
+  if (n === 3 && !state.mode) { alert('Please select a game mode.'); return; }
+  if (n === 4 && !state.format) { alert('Please select a team format.'); return; }
+  if (n === 5) {
+    state.coachName = document.getElementById('coachName').value || 'Coach';
+    state.teamName = document.getElementById('teamName').value || 'My Team';
+    state.email = document.getElementById('coachEmail').value || '';
+    if (!document.getElementById('leagueTeamsContainer').children.length) buildLeagueTeams();
+  }
+  if (n === 6) buildSummary();
+
+  // Skip mode page for NRL Fantasy (classic only)
+  if (n === 2 && state.platform === 'fantasy') { renderPage(3); updateSteps(3); return; }
+
+  renderPage(n);
+  updateSteps(n);
+}
+
+function renderPage(n) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page' + n).classList.add('active');
+  document.getElementById('progressFill').style.width = Math.round((n/6)*100) + '%';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateSteps(n) {
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('s' + i);
+    if (!el) continue;
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+}
+
+// ──────────────────────────────────────────────
+// SUMMARY
+// ──────────────────────────────────────────────
+function buildSummary() {
+  const slots = FORMATS[state.format || 'full'];
+  let onField = '', bench = '';
+  slots.forEach(slot => {
+    const el = document.getElementById('my_' + slot.id);
+    const val = (el && el.value) ? el.value : '—';
+    const item = `<div class="summary-item"><div class="s-label">${slot.badge} — ${slot.label}</div><div class="s-value" style="font-size:13px;">${val}</div></div>`;
+    if (slot.bench) bench += item; else onField += item;
+  });
+
+  // Count league teams filled
+  const n = parseInt(document.getElementById('leagueSize').value) || 10;
+  let leagueHtml = '';
+  for (let i = 1; i <= n-1; i++) {
+    const el = document.getElementById(`lt_name_${i}`);
+    const nm = (el && el.value) ? el.value : `Team ${i}`;
+    leagueHtml += `<div class="summary-item"><div class="s-label">League Team ${i}</div><div class="s-value" style="font-size:13px;">${nm}</div></div>`;
+  }
+
+  document.getElementById('summaryContent').innerHTML = `
+    <div class="summary-grid" style="margin-bottom:14px;">
+      <div class="summary-item"><div class="s-label">Coach</div><div class="s-value">${state.coachName}</div></div>
+      <div class="summary-item"><div class="s-label">Team</div><div class="s-value">${state.teamName}</div></div>
+      <div class="summary-item"><div class="s-label">Platform</div><div class="s-value">${state.platform==='supcoach'?'SuperCoach':'NRL Fantasy'}</div></div>
+      <div class="summary-item"><div class="s-label">Mode</div><div class="s-value" style="text-transform:capitalize;">${state.mode}</div></div>
+      <div class="summary-item"><div class="s-label">Format</div><div class="s-value">${state.format==='full'?'Full (17+4)':'Mini (9+4)'}</div></div>
+      <div class="summary-item"><div class="s-label">League Size</div><div class="s-value">${n} teams</div></div>
+    </div>
+    <div class="section-divider"><span>Starting Lineup</span></div>
+    <div class="summary-grid">${onField}</div>
+    <div class="section-divider"><span>Interchange</span></div>
+    <div class="summary-grid">${bench}</div>
+    <div class="section-divider"><span>League Teams</span></div>
+    <div class="summary-grid">${leagueHtml}</div>`;
+}
+
+// ──────────────────────────────────────────────
+// SUBMIT
+// ──────────────────────────────────────────────
+function submit() {
+  renderPage(7);
+  document.getElementById('successMsg').textContent =
+    `Welcome aboard, ${state.coachName}. ${state.teamName} and your full league have been submitted — our coaching team will be in touch shortly.`;
+  for (let i = 1; i <= 6; i++) { const el = document.getElementById('s'+i); if(el){el.classList.remove('active');el.classList.add('done');} }
+  document.getElementById('progressFill').style.width = '100%';
+}
+</script>
+</body>
+</html>
