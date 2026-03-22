@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NRL Fantasy Coaching — Such Is Fantasy</title>
+  <meta name="description" content="Personal NRL fantasy coaching from Such Is Fantasy. Weekly strategy, trade advice, and lineup optimisation. Beat your H2H rival.">
+  <meta name="theme-color" content="#18181B">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --bg:      #18181B;
+      --surface: #1f1f22;
+      --surface2:#27272a;
+      --border:  rgba(255,255,255,0.07);
+      --cyan:    #00F0FF;
+      --magenta: #FF003C;
+      --text:    #ffffff;
+      --muted:   rgba(255,255,255,0.45);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    .clash { font-family: 'Clash Display', sans-serif; }
+
+    /* Noise overlay */
+    #noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: 999; opacity: 0.03;
+    }
+
+    /* Announce bar */
+    .announce-bar {
+      background: rgba(0,240,255,0.05);
+      border-bottom: 1px solid rgba(0,240,255,0.12);
+      padding: 0.5rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.5);
+    }
+    .announce-bar strong { color: var(--cyan); font-weight: 600; }
+
+    /* Nav */
+    nav {
+      padding: 1rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      color: #fff;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-back {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--cyan); }
+
+    /* Hero */
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 5rem 6vw 3rem;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      border: 1px solid rgba(0,240,255,0.25);
+      padding: 0.3rem 0.9rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+    .hero-cta-row {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      color: #000;
+      background: var(--cyan);
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.1s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      background: transparent;
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
+      border: 1px solid rgba(255,255,255,0.15);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.4); }
+
+    /* Section divider */
+    .section-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* What you get */
+    .what-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 6vw;
+    }
+    .what-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .what-card {
+      background: var(--surface);
+      padding: 2rem 1.75rem;
+      transition: background 0.2s;
+    }
+    .what-card:hover { background: var(--surface2); }
+    .what-card .icon {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .what-card h3 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .what-card p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* How it works */
+    .how-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 6vw;
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 1.25rem;
+      top: 2rem;
+      bottom: 2rem;
+      width: 1px;
+      background: var(--border);
+    }
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      padding: 1.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--cyan);
+      position: relative;
+      z-index: 1;
+    }
+    .step-content h4 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    .step-content p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* Pricing */
+    .pricing-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 6vw;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem 2rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .pricing-card:hover { border-color: rgba(0,240,255,0.3); }
+    .pricing-card.featured {
+      border-color: rgba(0,240,255,0.4);
+      background: rgba(0,240,255,0.03);
+    }
+    .pricing-card .badge {
+      position: absolute;
+      top: -0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cyan);
+      color: #000;
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .pricing-card .plan-name {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+    .pricing-card .price {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+    }
+    .pricing-card .price sup {
+      font-size: 1.2rem;
+      font-weight: 600;
+      vertical-align: top;
+      margin-top: 0.5rem;
+      display: inline-block;
+      color: var(--muted);
+    }
+    .pricing-card .price-note {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+    .pricing-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .pricing-card ul li {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      line-height: 1.5;
+    }
+    .pricing-card ul li::before {
+      content: '✓';
+      color: var(--cyan);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+    .pricing-card .cta-wrap { margin-top: auto; }
+
+    /* Social proof */
+    .proof-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 6vw;
+    }
+    .proof-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .proof-stat {
+      text-align: center;
+      flex: 1;
+      min-width: 100px;
+    }
+    .proof-stat .num {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+    .proof-stat .label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+    .proof-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    /* FAQ */
+    .faq-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 6vw;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 0;
+    }
+    .faq-item:first-of-type { border-top: 1px solid var(--border); }
+    .faq-q {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .faq-q .chevron {
+      flex-shrink: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+    .faq-a {
+      font-size: 0.73rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.open .faq-a { max-height: 200px; padding-top: 0.75rem; }
+    .faq-item.open .chevron { transform: rotate(90deg); }
+
+    /* Final CTA */
+    .final-cta {
+      max-width: 900px;
+      margin: 4rem auto 6rem;
+      padding: 0 6vw;
+      text-align: center;
+    }
+    .final-cta h2 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .final-cta h2 em { font-style: normal; color: var(--cyan); }
+    .final-cta p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    footer p {
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    footer a {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--cyan); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid rgba(0,240,255,0.2);
+      border-radius: 4px;
+      width: 100%;
+      max-width: 480px;
+      padding: 2.5rem;
+      position: relative;
+      transform: translateY(12px);
+      transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #fff; }
+    .modal h3 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .modal-plan-name {
+      font-size: 0.65rem;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+    }
+    .modal-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+    .modal-price {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .modal-price-note { font-size: 0.7rem; color: var(--muted); }
+    .modal-includes {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .modal-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .modal-features li {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+    .modal-features li::before {
+      content: '✓';
+      color: var(--cyan);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .modal-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      color: #000;
+      background: var(--cyan);
+      padding: 0.9rem 2rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.1s;
+      border: none;
+      cursor: pointer;
+    }
+    .modal-btn:active { transform: scale(0.97); }
+    .modal-btn:hover { opacity: 0.9; }
+    .modal-note {
+      margin-top: 1rem;
+      font-size: 0.6rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Stripe badge */
+    .stripe-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-size: 0.6rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+    }
+
+    /* Gsap hidden */
+    .gsap-fade { opacity: 0; transform: translateY(20px); }
+
+    @media (max-width: 640px) {
+      .hero { padding: 3.5rem 5vw 2rem; }
+      .proof-divider { display: none; }
+      .what-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Noise -->
+<svg id="noise" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"/></filter>
+  <rect width="100%" height="100%" filter="url(#n)" opacity="1"/>
+</svg>
+
+<!-- Announce bar -->
+<div class="announce-bar">
+  <strong>⚡ 2025 NRL Season</strong>&nbsp;&nbsp;Personal coaching now open — limited spots
+</div>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="nav-logo">Such Is <span>Fantasy</span></a>
+  <a href="index.html" class="nav-back">← Back to hub</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero gsap-fade">
+  <div class="hero-tag">NRL SUPERCOACH / DRAFTSTARS COACHING</div>
+  <h1>Stop losing to people<br>with <em>better intel.</em></h1>
+  <p class="hero-sub">
+    Personal 1-on-1 NRL fantasy coaching. Weekly check-ins, trade advice,
+    lineup optimisation, and late mail — before lockout. Built for players
+    who want to win, not just compete.
+  </p>
+  <div class="hero-cta-row">
+    <a href="#pricing" class="btn-primary">See Pricing</a>
+    <a href="#how-it-works" class="btn-secondary">How It Works</a>
+  </div>
+</section>
+
+<!-- Social proof strip -->
+<section class="proof-section gsap-fade">
+  <div class="proof-strip">
+    <div class="proof-stat">
+      <div class="num">5K+</div>
+      <div class="label">Discord Members</div>
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-stat">
+      <div class="num">4+</div>
+      <div class="label">Sports Covered</div>
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-stat">
+      <div class="num">24/7</div>
+      <div class="label">Late Mail Access</div>
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-stat">
+      <div class="num">1:1</div>
+      <div class="label">Personal Coaching</div>
+    </div>
+  </div>
+</section>
+
+<!-- What you get -->
+<section class="what-section gsap-fade">
+  <p class="section-label">// What's included</p>
+  <div class="what-grid">
+    <div class="what-card">
+      <div class="icon">📋</div>
+      <h3>Weekly Squad Review</h3>
+      <p>Your full team assessed every round. Who's a must-play, who's a fade, and why — delivered before lockout.</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">🔄</div>
+      <h3>Trade & Upgrade Advice</h3>
+      <p>Specific trade recommendations based on your squad, price changes, and fixture difficulty — not generic takes.</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">🏥</div>
+      <h3>Injury & Late Mail Alerts</h3>
+      <p>Real-time notifications for team news that affects your players. You'll know before the field does.</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">💬</div>
+      <h3>Direct Coach Access</h3>
+      <p>Message your coach directly each week. No bots. No generic tips. Just sharp, fast answers on your specific situation.</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">📊</div>
+      <h3>Captain & VC Selection</h3>
+      <p>Weekly captain pick with data-backed reasoning. Stop leaving points on the bench from a bad armband call.</p>
+    </div>
+    <div class="what-card">
+      <div class="icon">🎯</div>
+      <h3>H2H Match Strategy</h3>
+      <p>Head-to-head round advice. We'll tailor your selection to beat your specific opponent, not just chase points.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how-section gsap-fade" id="how-it-works">
+  <p class="section-label">// How it works</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h4>Choose a plan & pay</h4>
+        <p>Pick weekly ($10/wk, min 4 weeks) or lock in the full season at $200 AUD. Secure checkout via Stripe.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h4>Fill in your squad form</h4>
+        <p>After payment, you'll land on a quick intake form — tell us your team, your competition type, and your goals for the season.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h4>Monday check-in each week</h4>
+        <p>Every Monday you'll send in your squad. We'll review it and get back to you with your weekly brief by Tuesday morning.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h4>Lock and load by Wednesday</h4>
+        <p>Your final team is confirmed before Wednesday lockout. No second-guessing. No panic trades. Just a plan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing-section gsap-fade" id="pricing">
+  <p class="section-label">// Pricing</p>
+  <div class="pricing-grid">
+
+    <!-- Weekly plan -->
+    <div class="pricing-card">
+      <div>
+        <div class="plan-name">WEEKLY COACHING</div>
+        <div class="pricing-card price" style="margin-top: 0.75rem;">
+          <sup>$</sup>10
+        </div>
+        <div class="price-note">AUD / week &mdash; minimum 4 weeks ($40)</div>
+      </div>
+      <ul>
+        <li>Weekly squad review before lockout</li>
+        <li>Trade & upgrade recommendations</li>
+        <li>Captain & VC selection</li>
+        <li>Direct coach access via form</li>
+        <li>Injury & late mail alerts</li>
+        <li>Cancel after minimum 4 weeks</li>
+      </ul>
+      <div class="cta-wrap">
+        <button class="btn-primary" style="width:100%; justify-content:center;" onclick="openModal('weekly')">
+          Get Started — $10/wk
+        </button>
+      </div>
+    </div>
+
+    <!-- Season plan -->
+    <div class="pricing-card featured">
+      <div class="badge">BEST VALUE</div>
+      <div>
+        <div class="plan-name">FULL SEASON COACHING</div>
+        <div class="pricing-card price" style="margin-top: 0.75rem;">
+          <sup>$</sup>200
+        </div>
+        <div class="price-note">AUD — one payment, full 2025 NRL season</div>
+      </div>
+      <ul>
+        <li>Everything in Weekly, for the full season</li>
+        <li>Priority response — coach gets back same day</li>
+        <li>H2H match strategy each round</li>
+        <li>Pre-season squad build advice</li>
+        <li>Save $~185 vs paying week-to-week</li>
+        <li>Founding member rate — locked in for 2026</li>
+      </ul>
+      <div class="cta-wrap">
+        <button class="btn-primary" style="width:100%; justify-content:center; background: var(--cyan);" onclick="openModal('season')">
+          Lock In Season — $200
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section gsap-fade">
+  <p class="section-label">// FAQ</p>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      What platform does the coaching cover?
+      <span class="chevron">›</span>
+    </div>
+    <div class="faq-a">SuperCoach and DraftStars are the primary focus. If you play another format, mention it in the intake form and we'll do our best to adapt.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      When does the weekly coaching cycle run?
+      <span class="chevron">›</span>
+    </div>
+    <div class="faq-a">You submit your squad Monday evening. We review and send your brief by Tuesday morning. Final check-in Wednesday before lockout.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Can I cancel the weekly plan?
+      <span class="chevron">›</span>
+    </div>
+    <div class="faq-a">Yes — after the minimum 4-week commitment, you can stop at any time. Just let your coach know before the next billing cycle.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      What's included in "direct coach access"?
+      <span class="chevron">›</span>
+    </div>
+    <div class="faq-a">You communicate via the weekly check-in form. Season clients get priority responses, typically same-day. Weekly clients receive a brief within 24 hours of submission.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Is this worth it if I'm already active in the Discord?
+      <span class="chevron">›</span>
+    </div>
+    <div class="faq-a">The Discord gives you community intelligence. Coaching gives you personal advice on YOUR team — your specific trades, your specific squad, your specific opponent. It's a different product.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      What if I join mid-season?
+      <span class="chevron">›</span>
+    </div>
+    <div class="faq-a">You can start any time. Season pricing stays at $200 regardless of when you join. Weekly plan starts from your first payment week.</div>
+  </div>
+
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta gsap-fade">
+  <h2>Beat your <em>H2H rival.</em></h2>
+  <p>Limited coaching spots available for the 2025 NRL season.<br>Lock yours in before they're gone.</p>
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <button class="btn-primary" onclick="openModal('season')">Lock In Season — $200</button>
+    <button class="btn-secondary" onclick="openModal('weekly')">Start Weekly — $10/wk</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025 Such Is Fantasy. All rights reserved.</p>
+  <div style="display:flex; gap:1.5rem;">
+    <a href="index.html">Home</a>
+    <a href="https://discord.gg/suchisfantasy" target="_blank">Discord</a>
+  </div>
+</footer>
+
+<!-- ─── CHECKOUT MODAL ─── -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    <h3 id="modal-title">Checkout</h3>
+    <div class="modal-plan-name" id="modal-plan-label">NRL FANTASY COACHING</div>
+
+    <div class="modal-price-row">
+      <div class="modal-price" id="modal-price-display">$10</div>
+      <div class="modal-price-note" id="modal-price-period">AUD / week</div>
+    </div>
+
+    <div class="modal-includes">WHAT YOU GET:</div>
+    <ul class="modal-features" id="modal-features-list">
+      <!-- populated by JS -->
+    </ul>
+
+    <a id="modal-stripe-btn" href="#" class="modal-btn" target="_blank" rel="noopener">
+      Pay Securely via Stripe →
+    </a>
+
+    <div class="stripe-note">
+      🔒 Powered by Stripe — secure, encrypted checkout
+    </div>
+    <div class="modal-note" id="modal-note-text">
+      After payment you'll be redirected to fill in your squad intake form.
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────
+  //  STRIPE PAYMENT LINKS — swap these out once
+  //  you've created them in your Stripe dashboard.
+  //  Set the "success URL" in Stripe to:
+  //    https://suchisfantasysport.com/nrl_onboarding.html
+  // ─────────────────────────────────────────────
+  const STRIPE_LINKS = {
+    weekly:  'https://buy.stripe.com/REPLACE_WEEKLY_LINK',
+    season:  'https://buy.stripe.com/REPLACE_SEASON_LINK',
+  };
+
+  const PLANS = {
+    weekly: {
+      title:       'Weekly Coaching',
+      planLabel:   'NRL FANTASY COACHING — WEEKLY',
+      price:       '$10',
+      period:      'AUD / week (min. 4 weeks)',
+      note:        'After payment you\'ll be redirected to your squad intake form. Coaching starts your first Monday after sign-up.',
+      features: [
+        'Weekly squad review before lockout',
+        'Trade & upgrade recommendations',
+        'Captain & VC selection',
+        'Direct coach access via form',
+        'Injury & late mail alerts',
+        'Cancel after minimum 4 weeks',
+      ],
+    },
+    season: {
+      title:       'Full Season Coaching',
+      planLabel:   'NRL FANTASY COACHING — 2025 SEASON',
+      price:       '$200',
+      period:      'AUD — one-off payment',
+      note:        'After payment you\'ll be redirected to your squad intake form. Priority same-day coaching starts immediately.',
+      features: [
+        'Full season coverage — every round',
+        'Same-day priority coach responses',
+        'H2H match strategy each round',
+        'Pre-season squad build advice',
+        'Founding member rate locked for 2026',
+        'Save ~$185 vs weekly plan',
+      ],
+    },
+  };
+
+  function openModal(plan) {
+    const p = PLANS[plan];
+    document.getElementById('modal-title').textContent = p.title;
+    document.getElementById('modal-plan-label').textContent = p.planLabel;
+    document.getElementById('modal-price-display').textContent = p.price;
+    document.getElementById('modal-price-period').textContent = p.period;
+    document.getElementById('modal-note-text').textContent = p.note;
+
+    const list = document.getElementById('modal-features-list');
+    list.innerHTML = p.features.map(f => `<li>${f}</li>`).join('');
+
+    const btn = document.getElementById('modal-stripe-btn');
+    btn.href = STRIPE_LINKS[plan];
+
+    // Warn if link not yet set
+    if (STRIPE_LINKS[plan].includes('REPLACE')) {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        alert('Stripe payment link not yet configured. Add it to STRIPE_LINKS in the page source.');
+      };
+    } else {
+      btn.onclick = null;
+    }
+
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  // FAQ accordion
+  function toggleFaq(el) {
+    const item = el.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // GSAP entrance animations
+  gsap.registerPlugin();
+  gsap.utils.toArray('.gsap-fade').forEach((el, i) => {
+    gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: 'power3.out',
+      delay: i * 0.08,
+    });
+  });
+</script>
+
+</body>
+</html>
